@@ -9,6 +9,7 @@
 #include "../pid_fan.h"
 #include "../debug_log.h"
 #include "../remote_post.h"
+#include "../network/tuya_lan.h"
 
 // ── Fan settings section (lower portion of settings page) ────────────────────
 
@@ -411,5 +412,21 @@ void drawSettingsPage3() {
     // MAC address
     {
         drawRow("MAC:", WiFi.macAddress().c_str());
+    }
+    // Tuya device ID (from NVS / runtime)
+    {
+        char tuyaIp[64], tuyaId[32], tuyaKey[17];
+        tuyaGetSettings(tuyaIp, tuyaId, tuyaKey);
+        drawRow("Tuya ID:", tuyaId);
+        // Mask last 4 chars of local key with '****'
+        size_t klen = strlen(tuyaKey);
+        if (klen > 4) {
+            char maskedKey[17];
+            strlcpy(maskedKey, tuyaKey, sizeof(maskedKey));
+            for (size_t i = klen - 4; i < klen && i < 16; i++) maskedKey[i] = '*';
+            drawRow("Tuya Key:", maskedKey);
+        } else {
+            drawRow("Tuya Key:", "****");
+        }
     }
 }

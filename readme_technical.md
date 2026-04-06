@@ -70,7 +70,13 @@ poster all read.
 
 ---
 
-# 5. Requird Hardware
+# 5. NC01 Tuya Cloud Details
+
+- Look at _**documentation/TUYA Cloud API Explorer device information**_ for some example data and other stuff the device provides via the Tuya Cloud API Explorer.
+
+---
+
+# 6. Requird Hardware
 
 - NC01 wireless BBQ thermometer [Aliexpress Link](https://de.aliexpress.com/item/1005006834715411.html "Aliexpress link")
 - "Cheap Yellow Display" [Aliexpress Link](https://de.aliexpress.com/w/wholesale-ESP32-touchscreen-yellow-2.8.html "Aliexpress link")  
@@ -79,7 +85,6 @@ poster all read.
   ![Simple 3.3V FET board](documentation/IRF520_board.jpg)
 - USB powered blower fan from Amazon  
    This will need adaption to the ESP32 PWM controlling. Still waiting for the package.  
-   This will also require some sort of metal adapter plate to fit the Kamado's air inlet.
-  ![USB fan](documentation/USB_Blower_Amazon.png)
+   This will also require some sort of metal adapter plate to fit the Kamado's air inlet. ![USB fan](documentation/USB_Blower_Amazon.png)
 - A simple RC servo like the SG90 [Aliexpress link](https://de.aliexpress.com/w/wholesale-SG90-servo.html) for the blower cutoff mechanism.  
   ![SG90 RC servo](documentation/SG90_Servo.png)

@@ -1,6 +1,14 @@
-# PitPirate
-
 [![GitHub](https://img.shields.io/badge/GitHub-plueschpruem%2FPitPirate-181717?logo=github)](https://github.com/plueschpruem/PitPirate)
+
+![PlatformIO](https://img.shields.io/badge/PlatformIO-ESP32-FF7F00?logo=platformio&logoColor=white) ![ESP32](https://img.shields.io/badge/ESP32-Arduino-E7352C?logo=arduino&logoColor=white) ![C++](https://img.shields.io/badge/C++-17-00599C?logo=cplusplus&logoColor=white)
+![LittleFS](https://img.shields.io/badge/LittleFS-filesystem-grey) ![Tuya](https://img.shields.io/badge/Tuya-LAN%20Protocol-FF4800?logo=tuya&logoColor=white)
+
+![Vite](https://img.shields.io/badge/Vite-bundler-646CFF?logo=vite&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-backend-777BB4?logo=php&logoColor=white) ![Vue 3](https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white)
+![Vuetify](https://img.shields.io/badge/Vuetify-3-1867C0?logo=vuetify&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+
+---
+
+# PitPirate
 
 ## Another ESP32 BBQ thermometer gateway
 
@@ -13,7 +21,7 @@
 **Features (in loose order):**
 
 - Tuya LAN protocol – polls the NC01 directly over local WiFi, no cloud dependency
-- Up to 6 food probes + ambient pit temperature
+- Up to 5 food probes (on the NC01) + ambient pit temperature
 - HTTP/S requests handled in Core0 to make TFT and all the rest run smoothly
 - High / Low alarms for each probe
 - Battery level monitoring and display
