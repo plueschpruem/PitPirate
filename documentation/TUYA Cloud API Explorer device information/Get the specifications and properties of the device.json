@@ -1,0 +1,164 @@
+{
+  "result": {
+    "category": "swtz",
+    "functions": [
+      {
+        "code": "temp_unit_convert",
+        "desc": "{\"range\":[\"c\",\"f\"]}",
+        "name": "温标切换",
+        "type": "Enum",
+        "values": "{\"range\":[\"c\",\"f\"]}"
+      },
+      {
+        "code": "countdown",
+        "desc": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}",
+        "name": "探针1定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_2",
+        "desc": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}",
+        "name": "探针2定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_3",
+        "desc": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}",
+        "name": "探针3定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_4",
+        "desc": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}",
+        "name": "探针4定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_5",
+        "desc": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}",
+        "name": "探针5定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_6",
+        "desc": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}",
+        "name": "探针6定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_7",
+        "desc": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}",
+        "name": "探针7定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      }
+    ],
+    "status": [
+      {
+        "code": "battery_percentage",
+        "name": "电池电量",
+        "type": "Integer",
+        "values": "{\"unit\":\"%\",\"min\":0,\"max\":100,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "temp_current",
+        "name": "实时温度",
+        "type": "Integer",
+        "values": "{\"unit\":\"℃\",\"min\":-200,\"max\":3000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "temp_current_2",
+        "name": "实时温度2",
+        "type": "Integer",
+        "values": "{\"unit\":\"℃\",\"min\":-200,\"max\":3000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "temp_current_3",
+        "name": "实时温度3",
+        "type": "Integer",
+        "values": "{\"unit\":\"℃\",\"min\":-200,\"max\":3000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "temp_current_4",
+        "name": "实时温度4",
+        "type": "Integer",
+        "values": "{\"unit\":\"℃\",\"min\":-200,\"max\":3000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "temp_unit_convert",
+        "name": "温标切换",
+        "type": "Enum",
+        "values": "{\"range\":[\"c\",\"f\"]}"
+      },
+      {
+        "code": "countdown",
+        "name": "探针1定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_2",
+        "name": "探针2定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_3",
+        "name": "探针3定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_4",
+        "name": "探针4定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "temp_current_5",
+        "name": "实时温度5",
+        "type": "Integer",
+        "values": "{\"unit\":\"℃\",\"min\":-200,\"max\":3000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "temp_current_6",
+        "name": "实时温度6",
+        "type": "Integer",
+        "values": "{\"unit\":\"℃\",\"min\":-200,\"max\":3000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "temp_current_7",
+        "name": "实时温度7",
+        "type": "Integer",
+        "values": "{\"unit\":\"℃\",\"min\":-200,\"max\":5000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_5",
+        "name": "探针5定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_6",
+        "name": "探针6定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_7",
+        "name": "探针7定时",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      }
+    ]
+  },
+  "success": true,
+  "t": 1774297954301,
+  "tid": "<redacted>"
+}

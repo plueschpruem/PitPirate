@@ -1,0 +1,29 @@
+{
+  "result": [
+    {
+      "active_time": 1774281614,
+      "bind_space_id": "<redacted>",
+      "category": "swtz",
+      "create_time": 1774259637,
+      "custom_name": "",
+      "icon": "smart/icon/<redacted>.png",
+      "id": "<redacted>",
+      "ip": "<redacted>",
+      "is_online": true,
+      "lat": "<redacted>",
+      "local_key": "<redacted>",
+      "lon": "<redacted>",
+      "model": "w01",
+      "name": "ToGrill",
+      "product_id": "<redacted>",
+      "product_name": "ToGrill",
+      "sub": false,
+      "time_zone": "+01:00",
+      "update_time": 1774300206,
+      "uuid": "<redacted>"
+    }
+  ],
+  "success": true,
+  "t": 1775483874883,
+  "tid": "<redacted>"
+}

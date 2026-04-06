@@ -1,0 +1,71 @@
+{
+  "result": [
+    {
+      "code": "battery_percentage",
+      "value": 66
+    },
+    {
+      "code": "temp_current",
+      "value": 200
+    },
+    {
+      "code": "temp_current_2",
+      "value": 220
+    },
+    {
+      "code": "temp_current_3",
+      "value": 240
+    },
+    {
+      "code": "temp_current_4",
+      "value": 260
+    },
+    {
+      "code": "temp_unit_convert",
+      "value": "c"
+    },
+    {
+      "code": "countdown",
+      "value": 0
+    },
+    {
+      "code": "countdown_2",
+      "value": 0
+    },
+    {
+      "code": "countdown_3",
+      "value": 0
+    },
+    {
+      "code": "countdown_4",
+      "value": 0
+    },
+    {
+      "code": "temp_current_5",
+      "value": 190
+    },
+    {
+      "code": "temp_current_6",
+      "value": -200
+    },
+    {
+      "code": "temp_current_7",
+      "value": 200
+    },
+    {
+      "code": "countdown_5",
+      "value": 0
+    },
+    {
+      "code": "countdown_6",
+      "value": 0
+    },
+    {
+      "code": "countdown_7",
+      "value": 0
+    }
+  ],
+  "success": true,
+  "t": 1774298160267,
+  "tid": "<redacted>"
+}

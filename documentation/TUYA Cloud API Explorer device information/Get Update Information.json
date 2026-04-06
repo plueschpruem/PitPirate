@@ -1,0 +1,31 @@
+{
+  "result": [
+    {
+      "channel": 0,
+      "control_type": 0,
+      "current_version": "2.7.7",
+      "dev_type": 0,
+      "firmware_key": "<redacted>",
+      "last_upgrade_time": 0,
+      "timeout": 0,
+      "type": 0,
+      "type_desc": "Hauptmodul",
+      "upgrade_status": 0
+    },
+    {
+      "channel": 9,
+      "control_type": 0,
+      "current_version": "1.0.0",
+      "dev_type": 0,
+      "firmware_key": "",
+      "last_upgrade_time": 0,
+      "timeout": 0,
+      "type": 9,
+      "type_desc": "MCU-Modul",
+      "upgrade_status": 0
+    }
+  ],
+  "success": true,
+  "t": 1774298279436,
+  "tid": "<redacted>"
+}

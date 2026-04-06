@@ -1,0 +1,66 @@
+{
+  "result": {
+    "category": "swtz",
+    "functions": [
+      {
+        "code": "temp_unit_convert",
+        "desc": "temp unit convert",
+        "name": "temp unit convert",
+        "type": "Enum",
+        "values": "{\"range\":[\"c\",\"f\"]}"
+      },
+      {
+        "code": "countdown",
+        "desc": "countdown",
+        "name": "countdown",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_2",
+        "desc": "countdown 2",
+        "name": "countdown 2",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_3",
+        "desc": "countdown 3",
+        "name": "countdown 3",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_4",
+        "desc": "countdown 4",
+        "name": "countdown 4",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_5",
+        "desc": "countdown 5",
+        "name": "countdown 5",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_6",
+        "desc": "countdown 6",
+        "name": "countdown 6",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      },
+      {
+        "code": "countdown_7",
+        "desc": "countdown 7",
+        "name": "countdown 7",
+        "type": "Integer",
+        "values": "{\"unit\":\"min\",\"min\":0,\"max\":20000,\"scale\":0,\"step\":1}"
+      }
+    ]
+  },
+  "success": true,
+  "t": 1774298099597,
+  "tid": "<redacted>"
+}

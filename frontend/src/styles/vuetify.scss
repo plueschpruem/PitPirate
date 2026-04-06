@@ -1,0 +1,13 @@
+@use 'vuetify/settings' with (
+  // Use system fonts — no external font download needed (ESP32 = no internet)
+  $body-font-family: (Arial, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif)
+);
+
+// Vuetify sets min-height:100dvh on .v-application__wrap. Since #app already
+// consumes safe-area-inset-top/bottom as padding, adding 100dvh on top of that
+// creates unwanted scroll on iOS 26 desktop PWA (large title-bar safe insets).
+// Subtract those insets so wrap + padding = exactly 100dvh.
+.v-application__wrap {
+  min-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+}
+

@@ -1,0 +1,239 @@
+:root {
+  // MAIN CONTAINER WIDTH
+  --container-main-width: 700px;
+  // BATTERY INDICATOR
+  --battery--0: #9a0003;
+  --battery--33: #c16306;
+  --battery--66: #32ab02;
+  --battery--100: #32ab02;
+  // PROBES TEXT
+  --probe-text--1: #e53935; // red
+  --probe-text--2: #fb8c00; // orange
+  --probe-text--3: #f3db09; // yellow
+  --probe-text--4: #43a047; // green
+  --probe-text--5: #8c28e3; // purple
+  --probe-text--6: #00acc1; // cyan (no connector on device)
+  --probe-text--7: #777777; // gray (ambient alt)
+  // PROBES BACKGROUND
+  --probe-bg--1: #400001; // red
+  --probe-bg--2: #402900; // orange
+  --probe-bg--3: #4c3e01; // yellow
+  --probe-bg--4: #004001; // green
+  --probe-bg--5: #2f0c5a; // purple
+  --probe-bg--6: #004d4d; // cyan (no connector on device)
+  --probe-bg--7: #333333; // gray (ambient alt)
+}
+// Global resets & iOS PWA refinements
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #1a1a1a;
+  // Use system fonts — Vuetify defaults to Roboto which requires Google Fonts
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  // Prevent iOS rubber-band scroll
+  overscroll-behavior: none;
+
+  // Prevent iOS font-size inflation on orientation change
+  -webkit-text-size-adjust: 100%;
+}
+
+// SVG icon rendering via CSS mask (color driven by currentColor)
+.svg-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-color: currentColor;
+  mask-image: var(--icon-url);
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  mask-position: center;
+  -webkit-mask-image: var(--icon-url);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+}
+
+#app {
+  // Respect iPhone notch / home-indicator safe areas
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.container-main {
+  max-width: var(--container-main-width);
+}
+
+.probe {
+  user-select: none;
+  &__header {
+    opacity: 1;
+    @media (width > 768px) {
+      opacity: 0;
+    }
+    transition: opacity 500ms;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  &__content {
+    &__title {
+      opacity: 0.5;
+    }
+  }
+  &:hover {
+    .probe__header {
+      opacity: 1;
+    }
+  }
+}
+
+.probe-chart__header {
+  &__height,
+  &__range {
+    justify-content: flex-end;
+    padding: 0 4px 4px;
+  }
+}
+
+.probe-chart__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  opacity: 0.6;
+}
+
+// ── ProbeChartSvg ─────────────────────────────────────────────────────────────
+.pchart {
+  // VARIABLES
+  --pchart-label-size: 12px;
+  --pchart-alarm-label-size: 18px;
+  --pchart-alarm-label-opacity: 0.55;
+  --pchart-tooltip-size: 14px;
+  --pchart-tooltip-line-color: white;
+
+  &__svg {
+    overflow: visible;
+  }
+
+  // Grid
+  &__grid-line {
+    stroke-width: 1;
+    stroke-opacity: 0.2;
+  }
+
+  // Axes
+  &__y-label {
+    font-size: var(--pchart-label-size);
+    fill-opacity: 0.75;
+    text-anchor: end;
+    dominant-baseline: middle;
+  }
+
+  &__x-label {
+    font-size: var(--pchart-label-size);
+    fill-opacity: 0.75;
+    text-anchor: middle;
+  }
+
+  // Area + line
+  &__area {
+    stroke: none;
+  }
+
+  &__line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  // Alarm lines
+  &__alarm-line {
+    stroke: white;
+    stroke-opacity: var(--pchart-alarm-label-opacity);
+    stroke-width: 1;
+    stroke-dasharray: 6 4;
+  }
+
+  &__alarm-label {
+    font-size: var(--pchart-alarm-label-size);
+    font-weight: bold;
+    fill: white;
+    fill-opacity: var(--pchart-alarm-label-opacity);
+
+    &--hi {
+      text-anchor: end;
+    }
+  }
+
+  // Tooltip
+  &__crosshair {
+    stroke: white;
+    stroke-width: 1;
+    stroke-opacity: 0.35;
+  }
+
+  &__dot {
+    stroke: white;
+    stroke-width: 1.5;
+  }
+
+  &__tooltip-box {
+    fill: #1a1a1a;
+    fill-opacity: 0.7;
+    stroke: var(--pchart-tooltip-line-color);
+    stroke-width: 1;
+    stroke-opacity: 0.4;
+  }
+
+  &__tooltip-time {
+    font-size: var(--pchart-tooltip-size);
+    fill: rgba(255, 255, 255, 0.65);
+    text-anchor: middle;
+  }
+
+  &__tooltip-divider {
+    stroke: var(--pchart-tooltip-line-color);
+    stroke-opacity: 0.25;
+    stroke-width: 1;
+  }
+
+  &__tooltip-value {
+    font-size: var(--pchart-tooltip-size);
+    font-weight: bold;
+    fill: white;
+    text-anchor: middle;
+  }
+
+  &__overlay {
+    fill: transparent;
+    cursor: crosshair;
+  }
+}
+
+@keyframes pulse-zoom {
+  0% {
+    transform: scale(1);
+  }
+  20% {
+    transform: scale(1.25);
+  }
+  30% {
+    transform: scale(1.25);
+  }
+  40% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.warning-pulse {
+  animation: pulse-zoom 2s ease-in-out infinite;
+}

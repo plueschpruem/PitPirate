@@ -1,0 +1,490 @@
+{
+  "modelId": "0000032gxl",
+  "services": [
+    {
+      "actions": [],
+      "code": "",
+      "description": "",
+      "events": [],
+      "name": "默认服务",
+      "properties": [
+        {
+          "abilityId": 1,
+          "accessMode": "ro",
+          "code": "battery_percentage",
+          "description": "",
+          "extensions": {
+            "iconName": "icon-dp_battery",
+            "attribute": "1152"
+          },
+          "name": "电池电量",
+          "typeSpec": {
+            "type": "value",
+            "max": 100,
+            "min": 0,
+            "scale": 0,
+            "step": 1,
+            "unit": "%"
+          }
+        },
+        {
+          "abilityId": 2,
+          "accessMode": "ro",
+          "code": "temp_current",
+          "description": "",
+          "extensions": {
+            "iconName": "icon-dp_c",
+            "attribute": "640"
+          },
+          "name": "实时温度",
+          "typeSpec": {
+            "type": "value",
+            "max": 3000,
+            "min": -200,
+            "scale": 0,
+            "step": 1,
+            "unit": "℃"
+          }
+        },
+        {
+          "abilityId": 3,
+          "accessMode": "ro",
+          "code": "temp_current_2",
+          "description": "",
+          "extensions": {
+            "iconName": "icon-wendu2",
+            "attribute": "128"
+          },
+          "name": "实时温度2",
+          "typeSpec": {
+            "type": "value",
+            "max": 3000,
+            "min": -200,
+            "scale": 0,
+            "step": 1,
+            "unit": "℃"
+          }
+        },
+        {
+          "abilityId": 4,
+          "accessMode": "ro",
+          "code": "temp_current_3",
+          "description": "",
+          "extensions": {
+            "iconName": "icon-wendu2",
+            "attribute": "128"
+          },
+          "name": "实时温度3",
+          "typeSpec": {
+            "type": "value",
+            "max": 3000,
+            "min": -200,
+            "scale": 0,
+            "step": 1,
+            "unit": "℃"
+          }
+        },
+        {
+          "abilityId": 5,
+          "accessMode": "ro",
+          "code": "temp_current_4",
+          "description": "",
+          "extensions": {
+            "iconName": "icon-wendu2",
+            "attribute": "128"
+          },
+          "name": "实时温度4",
+          "typeSpec": {
+            "type": "value",
+            "max": 3000,
+            "min": -200,
+            "scale": 0,
+            "step": 1,
+            "unit": "℃"
+          }
+        },
+        {
+          "abilityId": 16,
+          "accessMode": "ro",
+          "code": "probe_state",
+          "description": "一个字节,0=探针未插入、1=探针插入。\n举例：00001100 代表3和4号探针插入。\n\n烹饪记录的开始时间为：设置每个探针的参数时的时间；\n结束时间为：探针拔出时间。",
+          "extensions": {
+            "iconName": "icon-zhuangtai",
+            "attribute": "640"
+          },
+          "name": "探针状态",
+          "typeSpec": {
+            "type": "raw",
+            "maxlen": 128
+          }
+        },
+        {
+          "abilityId": 17,
+          "accessMode": "rw",
+          "code": "temp_unit_convert",
+          "description": "",
+          "extensions": {
+            "iconName": "icon-dp_mode",
+            "attribute": "128"
+          },
+          "name": "温标切换",
+          "typeSpec": {
+            "type": "enum",
+            "range": ["c", "f"]
+          }
+        },
+        {
+          "abilityId": 23,
+          "accessMode": "rw",
+          "code": "cook_temp_alarm",
+          "description": "数据上报：用于硬件端告知APP取消和开始告警弹框的标示，\n一个字节，0代表温度不提醒 1代表温度到了app有告警提示\n举例：00000011 代表1和2号探针温度到了需要app的告警提示弹框\n\n数据下发：用于APP告知硬件取消判断温度的弹框提示",
+          "extensions": {
+            "iconName": "icon-dp_warming",
+            "scope": "fault",
+            "attribute": "128",
+            "trigger": "direct"
+          },
+          "name": "温度告警弹框",
+          "typeSpec": {
+            "type": "bitmap",
+            "label": [
+              "p1_target_alarm",
+              "p2_target_alarm",
+              "p3_target_alarm",
+              "p4_target_alarm",
+              "p5_target_alarm",
+              "p6_target_alarm",
+              "p7_target_alarm",
+              "p1_below_min",
+              "p2_below_min",
+              "p3_below_min",
+              "p4_below_min",
+              "p5_below_min",
+              "p6_below_min",
+              "p7_below_min",
+              "p1_above_max",
+              "p2_above_max",
+              "p3_above_max",
+              "p4_above_max",
+              "p5_above_max",
+              "p6_above_max",
+              "p7_above_max",
+              "p1_remove",
+              "p2_remove",
+              "p3_remove",
+              "p4_remove",
+              "p5_remove",
+              "p6_remove",
+              "p7_remove"
+            ],
+            "maxlen": 28
+          }
+        },
+        {
+          "abilityId": 24,
+          "accessMode": "rw",
+          "code": "countdown",
+          "description": "非必选，用于支持RTC的设备，公版范围为0-20000 second，\n设置告警时长后，MCU需每隔1min上报剩余时间，剩余时间等于0时，App有弹框提示。\n\n若设备不支持RTC，则用云定时做消息提醒。",
+          "extensions": {
+            "iconName": "icon-dp_time2",
+            "attribute": "1152"
+          },
+          "name": "探针1定时",
+          "typeSpec": {
+            "type": "value",
+            "max": 20000,
+            "min": 0,
+            "scale": 0,
+            "step": 1,
+            "unit": "min"
+          }
+        },
+        {
+          "abilityId": 25,
+          "accessMode": "rw",
+          "code": "countdown_2",
+          "description": "非必选，用于支持RTC的设备，公版范围为0-20000 second，\n设置告警时长后，MCU需每隔1min上报剩余时间，剩余时间等于0时，App有弹框提示。\n\n若设备不支持RTC，则用云定时做消息提醒。",
+          "extensions": {
+            "iconName": "icon-dp_time2",
+            "attribute": "1152"
+          },
+          "name": "探针2定时",
+          "typeSpec": {
+            "type": "value",
+            "max": 20000,
+            "min": 0,
+            "scale": 0,
+            "step": 1,
+            "unit": "min"
+          }
+        },
+        {
+          "abilityId": 26,
+          "accessMode": "rw",
+          "code": "countdown_3",
+          "description": "非必选，用于支持RTC的设备，公版范围为0-20000 second，\n设置告警时长后，MCU需每隔1min上报剩余时间，剩余时间等于0时，App有弹框提示。\n\n若设备不支持RTC，则用云定时做消息提醒。",
+          "extensions": {
+            "iconName": "icon-dp_time2",
+            "attribute": "1152"
+          },
+          "name": "探针3定时",
+          "typeSpec": {
+            "type": "value",
+            "max": 20000,
+            "min": 0,
+            "scale": 0,
+            "step": 1,
+            "unit": "min"
+          }
+        },
+        {
+          "abilityId": 27,
+          "accessMode": "rw",
+          "code": "countdown_4",
+          "description": "非必选，用于支持RTC的设备，公版范围为0-20000 second，\n设置告警时长后，MCU需每隔1min上报剩余时间，剩余时间等于0时，App有弹框提示。\n\n若设备不支持RTC，则用云定时做消息提醒。",
+          "extensions": {
+            "iconName": "icon-dp_time3",
+            "attribute": "1152"
+          },
+          "name": "探针4定时",
+          "typeSpec": {
+            "type": "value",
+            "max": 20000,
+            "min": 0,
+            "scale": 0,
+            "step": 1,
+            "unit": "min"
+          }
+        },
+        {
+          "abilityId": 28,
+          "accessMode": "ro",
+          "code": "temp_current_5",
+          "description": "",
+          "extensions": {
+            "iconName": "icon-wendu2",
+            "attribute": "1152"
+          },
+          "name": "实时温度5",
+          "typeSpec": {
+            "type": "value",
+            "max": 3000,
+            "min": -200,
+            "scale": 0,
+            "step": 1,
+            "unit": "℃"
+          }
+        },
+        {
+          "abilityId": 29,
+          "accessMode": "ro",
+          "code": "temp_current_6",
+          "description": "",
+          "extensions": {
+            "iconName": "icon-wendu2",
+            "attribute": "1152"
+          },
+          "name": "实时温度6",
+          "typeSpec": {
+            "type": "value",
+            "max": 3000,
+            "min": -200,
+            "scale": 0,
+            "step": 1,
+            "unit": "℃"
+          }
+        },
+        {
+          "abilityId": 30,
+          "accessMode": "ro",
+          "code": "temp_current_7",
+          "description": "",
+          "extensions": {
+            "iconName": "icon-wendu2",
+            "attribute": "1152"
+          },
+          "name": "实时温度7",
+          "typeSpec": {
+            "type": "value",
+            "max": 5000,
+            "min": -200,
+            "scale": 0,
+            "step": 1,
+            "unit": "℃"
+          }
+        },
+        {
+          "abilityId": 40,
+          "accessMode": "rw",
+          "code": "countdown_5",
+          "description": "（当前无用命令）非必选，用于支持RTC的设备，公版范围为0-20000 second，\n设置告警时长后，MCU需每隔1min上报剩余时间，剩余时间等于0时，App有弹框提示。\n\n若设备不支持RTC，则用云定时做消息提醒。",
+          "extensions": {
+            "iconName": "icon-dp_time2",
+            "attribute": "1152"
+          },
+          "name": "探针5定时（当前无用命令）",
+          "typeSpec": {
+            "type": "value",
+            "max": 20000,
+            "min": 0,
+            "scale": 0,
+            "step": 1,
+            "unit": "min"
+          }
+        },
+        {
+          "abilityId": 41,
+          "accessMode": "rw",
+          "code": "countdown_6",
+          "description": "（当前无用命令）非必选，用于支持RTC的设备，公版范围为0-20000 second，\n设置告警时长后，MCU需每隔1min上报剩余时间，剩余时间等于0时，App有弹框提示。\n\n若设备不支持RTC，则用云定时做消息提醒。",
+          "extensions": {
+            "iconName": "icon-dp_time2",
+            "attribute": "1152"
+          },
+          "name": "探针6定时（当前无用命令）",
+          "typeSpec": {
+            "type": "value",
+            "max": 20000,
+            "min": 0,
+            "scale": 0,
+            "step": 1,
+            "unit": "min"
+          }
+        },
+        {
+          "abilityId": 42,
+          "accessMode": "rw",
+          "code": "countdown_7",
+          "description": "非必选，用于支持RTC的设备，公版范围为0-20000 second，\n设置告警时长后，MCU需每隔1min上报剩余时间，剩余时间等于0时，App有弹框提示。\n\n若设备不支持RTC，则用云定时做消息提醒。",
+          "extensions": {
+            "iconName": "icon-dp_time3",
+            "attribute": "1152"
+          },
+          "name": "探针7定时（当前无用命令）",
+          "typeSpec": {
+            "type": "value",
+            "max": 20000,
+            "min": 0,
+            "scale": 0,
+            "step": 1,
+            "unit": "min"
+          }
+        },
+        {
+          "abilityId": 101,
+          "accessMode": "rw",
+          "code": "get_probe_para",
+          "description": "发送探针编号，设备上报探针设置过的参数：探针编号、检测类型、最高温度、最低温度、食物类别、生熟度",
+          "name": "读取探针信息",
+          "typeSpec": {
+            "type": "string",
+            "maxlen": 255
+          }
+        },
+        {
+          "abilityId": 102,
+          "accessMode": "rw",
+          "code": "set_probe_parameter",
+          "description": "设置探针报警温度:区域温度、目标温度、清除探针参数、食品类别和生熟度",
+          "name": "设置探针报警温度",
+          "typeSpec": {
+            "type": "string",
+            "maxlen": 255
+          }
+        },
+        {
+          "abilityId": 103,
+          "accessMode": "rw",
+          "code": "confirm_alarm",
+          "description": "App确认报警、设备上报确认报警",
+          "extensions": {
+            "trigger": "direct"
+          },
+          "name": "确认报警",
+          "typeSpec": {
+            "type": "bool"
+          }
+        },
+        {
+          "abilityId": 104,
+          "accessMode": "ro",
+          "code": "device_type",
+          "description": "Bit7:是否有炉温探针：\n0——无；\n1——有。\nBit6-Bit4\n探针数量：\n 1——1 根探针；\n…\n6——6 根探针。\nBit3-Bit0\n无线特性：\n0——蓝牙；1——WIFI；2——蓝牙加 WIFI；3——蓝牙加 RFID；\n4~15——保留。",
+          "name": "设备类型",
+          "typeSpec": {
+            "type": "raw",
+            "maxlen": 128
+          }
+        },
+        {
+          "abilityId": 105,
+          "accessMode": "ro",
+          "code": "firmware_version",
+          "description": "固件版本分整数与小数，若整数与小数分别为 0x01 与 0x06，则固件版本为 1.6",
+          "name": "固件版本",
+          "typeSpec": {
+            "type": "string",
+            "maxlen": 255
+          }
+        },
+        {
+          "abilityId": 106,
+          "accessMode": "ro",
+          "code": "device_alarm",
+          "description": "",
+          "extensions": {
+            "scope": "fault"
+          },
+          "name": "设备状态通知",
+          "typeSpec": {
+            "type": "bitmap",
+            "label": ["device_charge", "device_temp_h", "device_temp_l"],
+            "maxlen": 3
+          }
+        },
+        {
+          "abilityId": 107,
+          "accessMode": "rw",
+          "code": "set_wifi_not_con",
+          "description": "设备开关机上报，当设备关机上报false，开机上报true，App做UI提示",
+          "name": "设备开关机上报",
+          "typeSpec": {
+            "type": "bool"
+          }
+        },
+        {
+          "abilityId": 108,
+          "accessMode": "rw",
+          "code": "alarm_interval",
+          "description": "",
+          "name": "报警间隔",
+          "typeSpec": {
+            "type": "enum",
+            "range": ["1", "3", "5", "10", "15", "20"]
+          }
+        },
+        {
+          "abilityId": 109,
+          "accessMode": "ro",
+          "code": "series_code",
+          "description": "（当前无用命令）系列名加系列编号组成完整的系列代码",
+          "name": "（当前无用命令）series_code",
+          "typeSpec": {
+            "type": "string",
+            "maxlen": 255
+          }
+        },
+        {
+          "abilityId": 110,
+          "accessMode": "rw",
+          "code": "switch_alarm_sound",
+          "description": "",
+          "name": "报警声开关",
+          "typeSpec": {
+            "type": "bool"
+          }
+        }
+      ]
+    }
+  ]
+}

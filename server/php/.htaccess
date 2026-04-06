@@ -1,0 +1,7 @@
+# Block direct HTTP access to files that must never be served to browsers.
+# config.php and config_DEFAULT.php contain VAPID private keys and shared secrets.
+# vapid-helper.php and generate-keys.php are include/CLI-only files.
+
+<FilesMatch "^(config|config_DEFAULT|vapid-helper)\.php$">
+    Require all denied
+</FilesMatch>
