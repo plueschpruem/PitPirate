@@ -22,16 +22,17 @@
 
 ## Sources are three-fold
 
-1. ESP32 source in `/src/`:  
+1. **ESP32 source in `/src/`:**  
    Uses PlatformIO. So make sure to install this in VisualStudioCode.  
    Partitioning in `partitions_2mb_fs.csv`.  
    Adjust & rename `/include/config_DEFAULT.h/` then compile & flash.
-2. Frontend App in `/frontend/`:  
+2. **Frontend App in `/frontend/`:**  
    Uses vite.ts with TypeScript to compile a vue3.js + vuetify project.  
    So you will need node.js and npm.  
    Actions in `/frontend/package.json`.  
-   Script `bulid` compiles into `/server/` and also in `/data/`. Those files go into the ESP32 FS.
-3. Server in `/server/`:  
+   Script `bulid` compiles into `/server/` and also in `/data/`. `/data/` files go into the ESP32 FS.  
+   **⚠️ Make sure to upload the ESP32 FS after build!**
+3. **Server in `/server/`:**  
    Uses php for the backend / API side. All php scripts in `/server/php/`.  
    Adjust & rename `/server/php/config_DEFAULT.php/` then upload.  
    The Frontend app also builds in here to be served.  
@@ -49,7 +50,7 @@
 - PID algo for fan blower PWM control
 - Touchscreen calibration screen
 - mDNS support – reachable as `pitpirate.local`
-- OTA firmware updates over WiFi
+- OTA firmware flashing over WiFi (with PIO for example)
 - Remote telemetry / debug logging to optional PHP server
 - AP mode with captive portal for WiFi provisioning
 - LittleFS-hosted frontend with gzip compression
@@ -58,11 +59,13 @@
 
 - Uses an ESP32 based [Cheap Yellow Display aka. "CYD"](https://macsbug.wordpress.com/2022/08/17/esp32-2432s028/ "CYD Information") _(website in Japanese)_  
   Mine is a 2432S028Rv3 – there are several sizes, versions revisions, sellers – most should be adaptable to this project.
-- ESP32: PlatformIO- Display driver: [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)
-- Touch driver: [XPT2046_Touchscreen](https://github.com/PaulStoffregen/XPT2046_Touchscreen)
-- Graphics: [PNGdec](https://github.com/bitbank2/PNGdec) / [AnimatedGIF](https://github.com/bitbank2/AnimatedGIF)
-- QR code: [QRcodeDisplay](https://github.com/yoprogramo/QRcodeDisplay)
-- Filesystem: LittleFS- Icons: [Material Design Icons](https://pictogrammers.com/library/mdi/)  
+- ESP32 Code: PlatformIO
+  - Display driver: [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI)
+  - Touch driver: [XPT2046_Touchscreen](https://github.com/PaulStoffregen/XPT2046_Touchscreen)
+  - Graphics: [PNGdec](https://github.com/bitbank2/PNGdec) / [AnimatedGIF](https://github.com/bitbank2/AnimatedGIF)
+  - QR code: [QRcodeDisplay](https://github.com/yoprogramo/QRcodeDisplay)
+  - Filesystem: LittleFS
+- Icons: [Material Design Icons](https://pictogrammers.com/library/mdi/)  
   Icons inserted manually, so we don't need to include the whole font.  
   SVGs icons added to [/frontend/public/icons](/frontend/public/icons)  
   One icon needs to have the mdi-prefix, as it is requested via the <v-select> element (mdi-menu-down.svg)
@@ -72,7 +75,7 @@
 - ✅ Most stuff I need is there
 - ✅ Add probe alarm settings to ESP32 TFT.
 - ✅ Move HTTP stuff to Core-0 to make touchscreen more responsive.  
-  Arduino HTTP is always synchronous and a laggy server replys otherwise blocks the whole ESP32.
+  Arduino HTTP is always synchronous and a laggy server reply otherwise blocks the whole ESP32.
 - ✅ Add screenshot function for documentation.
 - ✅ Add proper info & settings view to ESP32 TFT.
 - ✅ Add touchscreen calibration
@@ -168,7 +171,7 @@ _Well technically only the **local_key**, but the process is still required…_
 
 ---
 
-### 3. Preparing your Server and ESP32 settings
+### 1. Preparing your Server and ESP32 settings
 
 #### Server Settings
 
@@ -190,7 +193,7 @@ _Well technically only the **local_key**, but the process is still required…_
 
 ---
 
-### 4. Compilation
+### 3. Compilation
 
 All required actions are in [frontend/package.json](frontend/package.json)
 
@@ -203,7 +206,7 @@ All required actions are in [frontend/package.json](frontend/package.json)
 
 ---
 
-## Notifications
+### 4. Notifications
 
 - After installing the server-hosted app on your iOS homescreen (maybe Android too, I haven't tested that) you can turn on notifications in the Settings.
 - Those include connection errors, temperature limit alarms and low battery alarms.
@@ -213,7 +216,7 @@ All required actions are in [frontend/package.json](frontend/package.json)
 
 ---
 
-## AP Mode
+## 5. AP Mode
 
 _AP mode activates when…_
 
@@ -275,7 +278,7 @@ _Colors shift, noisy like a Merzbow CD_
 
 ---
 
-## Screenshots
+## Screenshots [ESP32 320x240 TFT]
 
 **_Main Screen_**  
  <img src="documentation/Screenshot_Main-1.png" alt="Screenshot at 16MHz" width="320" />  
@@ -308,3 +311,7 @@ _Explains itself_
 **_AccessPoint (AP) Mode Page_**  
  <img src="documentation/Screenshot_AP-Mode.png" alt="Screenshot at 16MHz" width="320" />  
 _Use this to setup the ESP32_
+
+**_Main Screen – but with a HTTP Error_**  
+ <img src="documentation/Screenshot_HTTP-Error.png" alt="Screenshot at 16MHz" width="320" />  
+_In case the server is slow to answer_
