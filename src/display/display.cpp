@@ -2,7 +2,8 @@
 
 #include <time.h>
 
-#include "../display/png_image.h"
+#include "png_image.h"
+#include "smooth_button.h"
 #include "../fan_control.h"
 #include "../network/wifi_manager.h"
 #include "../probe_data.h"
@@ -10,6 +11,7 @@
 #include "config.h"
 #include "tft_qr_display.h"
 #include "../http_task.h"
+#include "screenshot.h"
 
 // Font data — headers with raw PROGMEM arrays and no include guard.
 // Each must be included in exactly one translation unit.
@@ -110,49 +112,77 @@ void updateDisplay() {
         TFTQRDisplay qr(tft, QR_X, QR_Y, QR_SCALE, TFT_BLACK, TFT_WHITE);
         qr.create(qrStr);
 
-        tft.setTextColor(TFT_YELLOW, TFT_BLACK);
-        tft.setTextSize(2);
-        tft.setCursor(8, 10);
-        tft.print("WiFi Setup");
+		// Section label
+		tft.loadFont(FoundGriBol20);
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
+		tft.drawString("WiFi Setup", 5, 10);
+		tft.unloadFont();
 
-        tft.setTextColor(tft.color565(150, 150, 150), TFT_BLACK);
-        tft.setTextSize(1);
-        tft.setCursor(8, 48);
-        tft.print("Scan QR or connect to:");
+		// QR hint
+		tft.loadFont(FoundGriBol15);
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_WHITE, TFT_BLACK, true);
+		tft.drawString("Scan QR & connect", 5, 35);
+		tft.unloadFont();
 
-        tft.setTextColor(TFT_WHITE, TFT_BLACK);
-        tft.setCursor(8, 70);
-        tft.print("Network:");
-        tft.setTextColor(TFT_CYAN, TFT_BLACK);
-        tft.setTextSize(2);
-        tft.setCursor(8, 82);
-        tft.print(AP_SSID);
+		// network label
+		tft.loadFont(FoundGriBol15);
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
+		tft.drawString("Network:", 5, 75);
+		tft.unloadFont();
+		
+		// network SSID
+		tft.loadFont(FoundGriBol20);
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_WHITE, TFT_BLACK, true);
+		tft.drawString(AP_SSID, 5, 95);
+		tft.unloadFont();
 
-        tft.setTextColor(TFT_WHITE, TFT_BLACK);
-        tft.setTextSize(1);
-        tft.setCursor(8, 106);
-        tft.print("Password:");
-        tft.setTextColor(TFT_CYAN, TFT_BLACK);
-        tft.setTextSize(2);
-        tft.setCursor(8, 118);
-        tft.print(AP_PW);
+		// password label
+		tft.loadFont(FoundGriBol15);
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
+		tft.drawString("Password:", 5, 125);
+		tft.unloadFont();
+		
+		// password
+		tft.loadFont(FoundGriBol20);
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_WHITE, TFT_BLACK, true);
+		tft.drawString(AP_PW, 5, 145);
+		tft.unloadFont();
 
-        tft.setTextColor(tft.color565(150, 150, 150), TFT_BLACK);
-        tft.setTextSize(1);
-        tft.setCursor(8, 148);
-        tft.print("Then open 192.168.4.1");
+		// AP hint
+		tft.loadFont(FoundGriBol15);
+		tft.setTextDatum(TL_DATUM);
+		tft.setTextColor(TFT_WHITE, TFT_BLACK, true);
+		tft.drawString("Then open 192.168.4.1", 5, 180);
+		tft.unloadFont();
 
+		// REBOOT button
         uint16_t rstBg = tft.color565(120, 20, 20);
         uint16_t rstBdr = tft.color565(200, 60, 60);
-        tft.fillRoundRect(APRESET_BTN_X, APRESET_BTN_Y, APRESET_BTN_W, APRESET_BTN_H, 5, rstBg);
-        tft.drawRoundRect(APRESET_BTN_X, APRESET_BTN_Y, APRESET_BTN_W, APRESET_BTN_H, 5, rstBdr);
-        tft.setTextColor(TFT_WHITE, rstBg);
-        tft.setTextSize(2);
-        tft.setCursor(APRESET_BTN_X + (APRESET_BTN_W - 5 * 12) / 2,
-                      APRESET_BTN_Y + (APRESET_BTN_H - 16) / 2);
-        tft.print("Restart");
-
+		{
+			SmoothButton btn;
+			btn.initButton(&tft,
+				APRESET_BTN_X, APRESET_BTN_Y,	// position
+				APRESET_BTN_W, APRESET_BTN_H,	// size
+				8,  							// radius
+				rstBdr,   						// outline
+				rstBg,    						// fill
+				TFT_WHITE,                    	// text
+				"Reboot",						// text
+				FoundGriBol20,					// font
+				TFT_BLACK						// button outer BG color for antialiasing
+			);
+			btn.setTextYOffset(3);
+			btn.drawButton();
+		}
         dcache.invalidate();
+
+		// screenshotUpload();
         return;
     }
 

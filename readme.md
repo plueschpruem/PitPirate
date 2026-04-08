@@ -3,8 +3,10 @@
 ![PlatformIO](https://img.shields.io/badge/PlatformIO-ESP32-FF7F00?logo=platformio&logoColor=white) ![ESP32](https://img.shields.io/badge/ESP32-Arduino-E7352C?logo=arduino&logoColor=white) ![C++](https://img.shields.io/badge/C++-17-00599C?logo=cplusplus&logoColor=white)
 ![LittleFS](https://img.shields.io/badge/LittleFS-filesystem-grey) ![Tuya](https://img.shields.io/badge/Tuya-LAN%20Protocol-FF4800?logo=tuya&logoColor=white)
 
-![Vite](https://img.shields.io/badge/Vite-bundler-646CFF?logo=vite&logoColor=white) ![PHP](https://img.shields.io/badge/PHP-backend-777BB4?logo=php&logoColor=white) ![Vue 3](https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white)
-![Vuetify](https://img.shields.io/badge/Vuetify-3-1867C0?logo=vuetify&logoColor=white) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-bundler-646CFF?logo=vite&logoColor=white) ![Vue 3](https://img.shields.io/badge/Vue-3-4FC08D?logo=vuedotjs&logoColor=white) ![Vuetify](https://img.shields.io/badge/Vuetify-3-1867C0?logo=vuetify&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+
+![PHP](https://img.shields.io/badge/PHP-backend-777BB4?logo=php&logoColor=white)
 
 ---
 
@@ -270,3 +272,39 @@ _Banding and noise_
 **_Screenshot @ 16MHz:_**  
  <img src="documentation/Screenshot_16MHz.png" alt="Screenshot at 16MHz" width="320" />  
 _Colors shift, noisy like a Merzbow CD_
+
+---
+
+## Screenshots
+
+**_Main Screen_**  
+ <img src="documentation/Screenshot_Main-1.png" alt="Screenshot at 16MHz" width="320" />  
+_With two food probes and the ambient probe_
+
+**_Probe-1 Alarm Setting_**  
+ <img src="documentation/Screenshot_Alarms-1.png" alt="Screenshot at 16MHz" width="320" />  
+_Capped at 200°C, the probes can do a bit more_
+
+**_Probe-2 Alarm Setting_**  
+ <img src="documentation/Screenshot_Alarms-2.png" alt="Screenshot at 16MHz" width="320" />  
+_Capped at 200°C, the probes can do a bit more_
+
+**_Probe-7 (ambient) Alarm Setting_**  
+ <img src="documentation/Screenshot_Alarms-7.png" alt="Screenshot at 16MHz" width="320" />  
+_These go up to 600°C_
+
+**_Settings Page 1_**  
+ <img src="documentation/Screenshot_Settings_1.png" alt="Screenshot at 16MHz" width="320" />  
+_Main Settings_
+
+**_Settings Page 2_**  
+ <img src="documentation/Screenshot_Settings_2.png" alt="Screenshot at 16MHz" width="320" />  
+_Additional Settings_
+
+**_Touch Calibration Page_**  
+ <img src="documentation/Screenshot_Touch-Calibration.png" alt="Screenshot at 16MHz" width="320" />  
+_Explains itself_
+
+**_AccessPoint (AP) Mode Page_**  
+ <img src="documentation/Screenshot_AP-Mode.png" alt="Screenshot at 16MHz" width="320" />  
+_Use this to setup the ESP32_

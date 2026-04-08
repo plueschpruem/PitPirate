@@ -36,8 +36,8 @@ extern TFT_eSPI tft;
 #define PIDMODE_BTN_H   APMODE_BTN_H
 
 // Reset button on the AP-info screen (bottom-left of left panel)
-#define APRESET_BTN_X    8
-#define APRESET_BTN_Y  185
+#define APRESET_BTN_X    5
+#define APRESET_BTN_Y  205
 #define APRESET_BTN_W  120
 #define APRESET_BTN_H   28
 
@@ -53,7 +53,7 @@ extern TFT_eSPI tft;
 #define TEL_ONCHG_BTN_Y     (TEL_SECT_Y + 16)
 #define TEL_ONCHG_BTN_W     (SCREEN_W - 10)
 #define TEL_ONCHG_BTN_H      30
-#define TEL_INT_BTN_Y        (TEL_ONCHG_BTN_Y + TEL_ONCHG_BTN_H + 18)
+#define TEL_INT_BTN_Y        (TEL_ONCHG_BTN_Y + TEL_ONCHG_BTN_H + 10)
 #define TEL_INT_BTN_H         30
 #define TEL_INT_BTN_GAP        8
 #define TEL_INT_BTN_W        ((SCREEN_W - 10 - 3 * TEL_INT_BTN_GAP) / 4)
@@ -68,13 +68,13 @@ extern TFT_eSPI tft;
 #define FAN_SECT_Y     133   // top of the entire fan section
 #define FAN_BTN_GAP     10   // gap between fan row buttons (px)
 #define FAN_BTN_W      ((SCREEN_W - 3 * FAN_BTN_GAP) / 4)  // 72 px per button
-#define FAN_ROW1_Y     153   // Y of the 4-button row
+#define FAN_ROW1_Y     150   // Y of the 4-button row
 #define FAN_ROW1_H      30   // row 1 button height
 #define FAN_ROW2_Y     187   // Y of row 2 (entry btn + slider + speed text)
 #define FAN_ROW2_H      30   // row 2 element height
 // Row-2 slider (50 % screen width, right of the row-2 button)
-#define FAN_SLIDER_X   (FAN_BTN_W + FAN_BTN_GAP)                        // 82 px
-#define FAN_SLIDER_W   (SCREEN_W / 2)                                    // 160 px
+#define FAN_SLIDER_X   (5 + FAN_BTN_W + FAN_BTN_GAP + 5)                        // 82 px
+#define FAN_SLIDER_W   ((SCREEN_W / 2) - 10)                                    // 160 px
 #define FAN_SLIDER_TH    6   // slider track height (px)
 #define FAN_SLIDER_TY  (FAN_ROW2_Y + (FAN_ROW2_H - FAN_SLIDER_TH) / 2) // 199 px
 #define FAN_HANDLE_R     8   // touch handle radius (px)

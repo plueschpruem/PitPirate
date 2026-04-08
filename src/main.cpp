@@ -170,6 +170,8 @@ static int probeAtTouch(int tx, int ty) {
 
 void loop() {
     wifiCheck();
+    if (wifiJustConnected())
+        screenshotUploadFromFs();
     ArduinoOTA.handle();
 
     // ── Screenshot: BOOT button (GPIO_0) + debug log enabled ─────────────────
@@ -334,6 +336,7 @@ void loop() {
                 }
             } else if (s_showProbeLimits) {
                 // ── Probe alarm limits page touch ────────────────────────────
+                int aMax = (s_limitsProbeNum == 7) ? 600 : 200;
                 if (ty <= HDR_H && tx <= 110) {
                     // "< Back"
                     s_showProbeLimits = false;
@@ -347,21 +350,21 @@ void loop() {
                                  ty <= ALM_HI_SLIDER_TY + ALM_SLIDER_TH / 2 + ALM_BTN_H / 2);
                     int  delta = (tx < ALM_SLIDER_X) ? -1 : 1;
                     if (isLo) {
-                        s_limitsLo = constrain(s_limitsLo + delta, 0, 200);
+                        s_limitsLo = constrain(s_limitsLo + delta, 0, aMax);
                         drawAlarmLoSlider(s_limitsProbeNum, s_limitsLo);
                     } else if (isHi) {
-                        s_limitsHi = constrain(s_limitsHi + delta, 0, 200);
+                        s_limitsHi = constrain(s_limitsHi + delta, 0, aMax);
                         drawAlarmHiSlider(s_limitsProbeNum, s_limitsHi);
                     }
                 } else if (tx >= ALM_SLIDER_X && tx <= ALM_SLIDER_X + ALM_SLIDER_W &&
                            ty >= ALM_LO_SLIDER_TY - ALM_HANDLE_R - 2 &&
                            ty <= ALM_LO_SLIDER_TY + ALM_SLIDER_TH + ALM_HANDLE_R + 2) {
-                    s_limitsLo = constrain((tx - ALM_SLIDER_X) * 200 / ALM_SLIDER_W, 0, 200);
+                    s_limitsLo = constrain((tx - ALM_SLIDER_X) * aMax / ALM_SLIDER_W, 0, aMax);
                     drawAlarmLoSlider(s_limitsProbeNum, s_limitsLo);
                 } else if (tx >= ALM_SLIDER_X && tx <= ALM_SLIDER_X + ALM_SLIDER_W &&
                            ty >= ALM_HI_SLIDER_TY - ALM_HANDLE_R - 2 &&
                            ty <= ALM_HI_SLIDER_TY + ALM_SLIDER_TH + ALM_HANDLE_R + 2) {
-                    s_limitsHi = constrain((tx - ALM_SLIDER_X) * 200 / ALM_SLIDER_W, 0, 200);
+                    s_limitsHi = constrain((tx - ALM_SLIDER_X) * aMax / ALM_SLIDER_W, 0, aMax);
                     drawAlarmHiSlider(s_limitsProbeNum, s_limitsHi);
                 } else if (tx >= ALM_SET_BTN_X && tx <= ALM_SET_BTN_X + ALM_SET_BTN_W &&
                            ty >= ALM_SET_BTN_Y  && ty <= ALM_SET_BTN_Y  + ALM_SET_BTN_H) {

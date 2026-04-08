@@ -274,7 +274,7 @@ void drawErrorBar(bool show) {
         tft.setTextColor(TFT_WHITE, ebg);
         tft.setTextSize(2);
         tft.setCursor(64, ERR_BAR_Y + (ERR_BAR_H - 16) / 2);
-        tft.print("Device not found");
+        tft.print("NC01 not found!");
     } else {
         redrawProbeArea(lastKnownVals);
     }

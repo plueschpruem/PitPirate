@@ -61,8 +61,8 @@ void SmoothButton::initButton(TFT_eSPI*      gfx,
     _curr         = false;
     _last         = false;
 
-    strncpy(_label, label, 9);
-    _label[9] = '\0';
+    strncpy(_label, label, 30);
+    _label[30] = '\0';
 }
 
 // ── Rendering ─────────────────────────────────────────────────────────────────
@@ -77,23 +77,16 @@ void SmoothButton::drawButton(bool inverted, const char* long_label)
     uint16_t outline = _outlinecolor;
     uint16_t text    = inverted ? _fillcolor    : _textcolor;
 
-    // ── Background fill ───────────────────────────────────────────────────────
-    // fillSmoothRoundRect anti-aliases the corner pixels against _bgcolor,
-    // producing smooth rounded edges instead of the staircase of fillRoundRect.
-    if (_radius > 0) {
-        _gfx->fillSmoothRoundRect(_x1, _y1, _w, _h, _radius, fill, _bgcolor);
-    } else {
-        _gfx->fillRect(_x1, _y1, _w, _h, fill);
-    }
-
-    // ── Border ring ───────────────────────────────────────────────────────────
-    // drawSmoothRoundRect draws a ring whose corner thickness = r - ir.
+    // ── Smooth Button Body ───────────────────────────────────────────────────────────
+    // drawSmoothRoundRect draws a rounded rect whose corner thickness = r - ir.
     // Using ir = r-1 gives a ~1 px smooth (AA) border on the corners; the
-    // straight-edge segments of the ring are 1 px wide as well.
+    // straight-edge segments of the outline are 1 px wide as well.
     if (_radius > 0) {
         int32_t ir = (_radius > 1) ? (int32_t)_radius - 1 : 0;
-        _gfx->drawSmoothRoundRect(_x1, _y1, _radius, ir, _w, _h, outline, _bgcolor);
+        _gfx->fillSmoothRoundRect(_x1, _y1, _w, _h, _radius, fill, _bgcolor);
+        _gfx->drawSmoothRoundRect(_x1, _y1, _radius, ir, _w, _h, outline, fill);
     } else {
+        _gfx->fillRect(_x1, _y1, _w, _h, fill);
         _gfx->drawRect(_x1, _y1, _w, _h, outline);
     }
 
@@ -107,7 +100,7 @@ void SmoothButton::drawButton(bool inverted, const char* long_label)
     }
 
     _gfx->setTextDatum(MC_DATUM);
-    _gfx->setTextColor(text, fill, true);
+    _gfx->setTextColor(text, fill, false);
     _gfx->drawString(lbl, _x1 + _w / 2, _y1 + _h / 2 + _dy);
 
     if (_font) {

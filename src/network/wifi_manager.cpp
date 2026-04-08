@@ -136,8 +136,10 @@ void wifiForceAPMode() {
     startAP();
 }
 
-static int           s_errorCounter = 0;
-static unsigned long s_lastCheckMs  = 0;   // time-gate: only count one tick per second
+static int           s_errorCounter   = 0;
+static unsigned long s_lastCheckMs    = 0;   // time-gate: only count one tick per second
+static bool          s_wasConnected   = false;
+static bool          s_justConnected  = false;
 
 // Reconnect watchdog; must be called every loop() iteration.
 // In AP mode: processes pending captive DNS queries.
@@ -170,5 +172,19 @@ void wifiCheck() {
     } else {
         s_errorCounter = 0;
         s_lastCheckMs  = now;
+        if (!s_wasConnected) {
+            s_justConnected = true;   // rising edge — WiFi just came up
+        }
+        s_wasConnected = true;
     }
+}
+
+// Returns true once on the first call after a WiFi connect event, then resets.
+bool wifiJustConnected()
+{
+    if (s_justConnected) {
+        s_justConnected = false;
+        return true;
+    }
+    return false;
 }

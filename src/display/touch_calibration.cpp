@@ -68,7 +68,7 @@ static CornerInfo cornerInfo(int step) {
 static void drawCancelLink() {
     tft.loadFont(FoundGriBol15);
     tft.setTextDatum(BC_DATUM);
-    tft.setTextColor(tft.color565(100, 100, 100), TFT_BLACK, true);
+    tft.setTextColor(TFT_WHITE, TFT_BLACK, true);
     tft.drawString("< Cancel", SCREEN_W / 2, SCREEN_H - 2);
     tft.unloadFont();
 }
@@ -135,13 +135,13 @@ static void drawCalibStartScreen() {
 
     tft.loadFont(FoundGriBol20);
     tft.setTextDatum(TC_DATUM);
-    tft.setTextColor(TFT_WHITE, TFT_BLACK, true);
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
     tft.drawString("Touch Calibration", SCREEN_W / 2, 30);
     tft.unloadFont();
 
     tft.loadFont(FoundGriBol15);
     tft.setTextDatum(TC_DATUM);
-    tft.setTextColor(tft.color565(160, 160, 160), TFT_BLACK, true);
+    tft.setTextColor(TFT_WHITE, TFT_BLACK, true);
     tft.drawString("Touch corners as far on the", SCREEN_W / 2, 62);
     tft.drawString("outside as possible.", SCREEN_W / 2, 80);
     tft.drawString("4 corners will be captured,", SCREEN_W / 2, 105);

@@ -27,6 +27,8 @@
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WiFiClientSecure.h>
+#include <LittleFS.h>
+#include <FS.h>
 
 static const char* ENDPOINT_PATH = "/php/screenshot.php";
 
@@ -67,11 +69,129 @@ static bool parseBaseUrl(const char* base,
     return host[0] != '\0';
 }
 
+// ── LittleFS fallback ────────────────────────────────────────────────────────
+// Writes the current framebuffer to LittleFS in the same RAW1 format used for
+// the HTTP upload.  Overwrites any previous file at `path`.
+void screenshotSaveToFs(const char* path)
+{
+    fs::File f = LittleFS.open(path, "w", true);
+    if (!f) {
+        DLOGLN("[SHOT] LittleFS open failed");
+        return;
+    }
+
+    uint8_t hdr[8] = {
+        'R','A','W','1',
+        (uint8_t)(PX_W),     (uint8_t)(PX_W >> 8),
+        (uint8_t)(PX_H),     (uint8_t)(PX_H >> 8)
+    };
+    f.write(hdr, 8);
+
+    for (int y = 0; y < PX_H; y++) {
+        tft.readRect(0, y, PX_W, 1, s_lineBuf);
+        f.write((uint8_t*)s_lineBuf, (size_t)ROW_BYTES);
+    }
+    f.close();
+    DLOG("[SHOT] Saved to LittleFS %s (%lu B)\n", path, (unsigned long)PAYLOAD_SZ);
+}
+
+// ── Upload a previously saved LittleFS screenshot ───────────────────────────
+// Streams the raw file straight to the server without going through the TFT.
+// Deletes the file only on a successful upload.
+void screenshotUploadFromFs(const char* path)
+{
+    if (!LittleFS.exists(path)) return;   // nothing to do
+
+    char base[256];
+    remotePostGetBaseUrl(base);
+    if (base[0] == '\0') {
+        DLOGLN("[SHOT-FS] No server URL configured – keeping file");
+        return;
+    }
+
+    bool     isHttps = false;
+    char     host[128] = {};
+    uint16_t port = 80;
+    if (!parseBaseUrl(base, isHttps, host, sizeof(host), port)) {
+        DLOGLN("[SHOT-FS] Could not parse server URL");
+        return;
+    }
+
+    char hostHdr[160];
+    bool stdPort = (isHttps && port == 443) || (!isHttps && port == 80);
+    if (stdPort) snprintf(hostHdr, sizeof(hostHdr), "%s",    host);
+    else         snprintf(hostHdr, sizeof(hostHdr), "%s:%u", host, (unsigned)port);
+
+    char urlTmp[256] = {};
+    char token[64]   = {};
+    remotePostGetSettings(urlTmp, token);
+
+    fs::File f = LittleFS.open(path, "r");
+    if (!f) {
+        DLOGLN("[SHOT-FS] Could not open file");
+        return;
+    }
+    uint32_t fileSize = f.size();
+
+    static WiFiClientSecure sClient;
+    WiFiClient              plainClient;
+    WiFiClient*             conn;
+    if (isHttps) { sClient.setInsecure(); conn = &sClient; }
+    else         { conn = &plainClient; }
+
+    DLOG("[SHOT-FS] Connecting to %s:%u ...\n", host, (unsigned)port);
+    if (!conn->connect(host, port)) {
+        DLOGLN("[SHOT-FS] Connection failed – keeping file");
+        f.close();
+        return;
+    }
+
+    char reqBuf[512];
+    int  reqLen = snprintf(reqBuf, sizeof(reqBuf),
+        "POST %s HTTP/1.1\r\n"
+        "Host: %s\r\n"
+        "Content-Type: application/octet-stream\r\n"
+        "Content-Length: %lu\r\n"
+        "Connection: close\r\n",
+        ENDPOINT_PATH, hostHdr, (unsigned long)fileSize);
+    conn->write((uint8_t*)reqBuf, (size_t)reqLen);
+
+    if (token[0] != '\0') {
+        char tokHdr[96];
+        int  tLen = snprintf(tokHdr, sizeof(tokHdr), "X-PitPirate-Token: %s\r\n", token);
+        conn->write((uint8_t*)tokHdr, (size_t)tLen);
+    }
+    conn->write((uint8_t*)"\r\n", 2);
+
+    // Stream file in row-sized chunks, reusing the existing row buffer
+    DLOG("[SHOT-FS] Uploading %lu B from LittleFS ...\n", (unsigned long)fileSize);
+    while (f.available()) {
+        int got = f.read((uint8_t*)s_lineBuf, sizeof(s_lineBuf));
+        if (got > 0) conn->write((uint8_t*)s_lineBuf, (size_t)got);
+    }
+    conn->flush();
+    f.close();
+
+    unsigned long deadline = millis() + 5000UL;
+    while (conn->connected() && millis() < deadline) {
+        if (conn->available()) {
+            String line = conn->readStringUntil('\n');
+            DLOG("[SHOT-FS] \u2190 %s\n", line.c_str());
+            if (line == "\r" || line.length() == 0) break;
+        }
+    }
+    conn->stop();
+
+    LittleFS.remove(path);
+    DLOGLN("[SHOT-FS] Done – file deleted from LittleFS");
+}
+
 // ── Public entry point ────────────────────────────────────────────────────────
 void screenshotUpload()
 {
     if (WiFi.status() != WL_CONNECTED) {
-        DLOGLN("[SHOT] WiFi not connected – skipping");
+        DLOGLN("[SHOT] WiFi not connected – saving to LittleFS");
+        screenshotSaveToFs("/screenshot.raw");
         return;
     }
 

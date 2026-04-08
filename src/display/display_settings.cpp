@@ -1,5 +1,6 @@
 #include "display.h"
 #include "display_fonts.h"
+#include "smooth_button.h"
 
 #include <WiFi.h>
 #include <LittleFS.h>
@@ -19,15 +20,22 @@
 void drawPidModeBtn(bool enabled) {
     uint16_t bg = enabled ? tft.color565(0, 140, 0) : tft.color565(140, 0, 0);
     uint16_t bdr = enabled ? tft.color565(0, 220, 60) : tft.color565(220, 60, 60);
-    tft.fillRoundRect(PIDMODE_BTN_X, PIDMODE_BTN_Y, PIDMODE_BTN_W, PIDMODE_BTN_H, 8, bg);
-    tft.drawRoundRect(PIDMODE_BTN_X, PIDMODE_BTN_Y, PIDMODE_BTN_W, PIDMODE_BTN_H, 8, bdr);
-    const char* label = enabled ? "PID ON" : "PID OFF";
-    tft.loadFont(FoundGriBol20);
-    tft.setTextDatum(MC_DATUM);
-    tft.setTextColor(TFT_WHITE, bg, true);
-    tft.drawString(label, PIDMODE_BTN_X + PIDMODE_BTN_W / 2,
-                   PIDMODE_BTN_Y + PIDMODE_BTN_H / 2 + 3);
-    tft.unloadFont();
+    {
+        SmoothButton btn;
+        btn.initButton(&tft,
+                       PIDMODE_BTN_X, PIDMODE_BTN_Y,	// position
+                       PIDMODE_BTN_W, PIDMODE_BTN_H,	// size
+                       8,  								// radius
+                       bdr,   							// outline
+                       bg,    							// fill
+                       TFT_WHITE,                    	// text
+                       (enabled) ? "PID ON" : "PID OFF",// text
+                       FoundGriBol20,					// font
+					   TFT_BLACK						// button outer BG color for antialiasing
+					);
+        btn.setTextYOffset(3);
+        btn.drawButton();
+    }
 }
 
 // Draws the fan-control section of the settings page: quick-set row
@@ -44,7 +52,7 @@ void drawFanSection(uint8_t pct, uint8_t entryPct) {
     // Section label
     tft.loadFont(FoundGriBol15);
     tft.setTextDatum(ML_DATUM);
-    tft.setTextColor(tft.color565(130, 130, 130), TFT_BLACK, true);
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
     tft.drawString("FAN SPEED", 5, (FAN_SECT_Y + FAN_ROW1_Y) / 2);
     tft.unloadFont();
 
@@ -62,32 +70,51 @@ void drawFanSection(uint8_t pct, uint8_t entryPct) {
         fanOn ? tft.color565(0, 140, 0) : tft.color565(140, 0, 0),
         tft.color565(40, 70, 160),
         tft.color565(40, 70, 160),
-        tft.color565(40, 70, 160)};
+        tft.color565(40, 70, 160)
+	};
 
     for (int i = 0; i < 4; i++) {
-        int bx = i * (FAN_BTN_W + FAN_BTN_GAP);
-        int bw = (i == 3) ? (SCREEN_W - bx - 5) : FAN_BTN_W;  // last btn: 5 px from right edge
+        int bx = i * (FAN_BTN_W + FAN_BTN_GAP) + 5; // first btn: 5 px from left edge
+        int bw = (i == 3) ? (SCREEN_W - bx - 5) : FAN_BTN_W;  // last btn : 5 px from right edge
         uint16_t bg = row1Bg[i];
-        tft.fillRoundRect(bx, FAN_ROW1_Y, bw, FAN_ROW1_H, 4, bg);
-        tft.drawRoundRect(bx, FAN_ROW1_Y, bw, FAN_ROW1_H, 4, tft.color565(90, 130, 210));
-        tft.loadFont(FoundGriBol20);
-        tft.setTextDatum(MC_DATUM);
-        tft.setTextColor(TFT_WHITE, bg, true);
-        tft.drawString(row1Labels[i], bx + bw / 2, FAN_ROW1_Y + FAN_ROW1_H / 2 + 3);
-        tft.unloadFont();
+		{
+			SmoothButton btn;
+			btn.initButton(&tft,
+				bx, FAN_ROW1_Y,					// position
+				bw, FAN_ROW1_H,					// size
+				8,  							// radius
+				tft.color565(90, 130, 210),   	// outline
+				bg,    							// fill
+				TFT_WHITE,                    	// text
+				row1Labels[i],// text
+				FoundGriBol20,					// font
+				TFT_BLACK						// button outer BG color for antialiasing
+			);
+			btn.setTextYOffset(3);
+			btn.drawButton();
+		}
     }
 
     // ── Row 2: entry-speed button  +  slider  +  current speed ──────────────
     // Entry-speed button (mirrors row-1 button 2)
     {
         uint16_t bg = tft.color565(70, 70, 70);
-        tft.fillRoundRect(0, FAN_ROW2_Y, FAN_BTN_W, FAN_ROW2_H, 4, bg);
-        tft.drawRoundRect(0, FAN_ROW2_Y, FAN_BTN_W, FAN_ROW2_H, 4, tft.color565(90, 130, 210));
-        tft.loadFont(FoundGriBol20);
-        tft.setTextDatum(MC_DATUM);
-        tft.setTextColor(TFT_WHITE, bg, true);
-        tft.drawString(entryBuf, FAN_BTN_W / 2, FAN_ROW2_Y + FAN_ROW2_H / 2 + 3);
-        tft.unloadFont();
+		{
+			SmoothButton btn;
+			btn.initButton(&tft,
+				5, FAN_ROW2_Y,					// position
+				FAN_BTN_W, FAN_ROW2_H,			// size
+				8,  							// radius
+				tft.color565(90, 130, 210),   	// outline
+				bg,    							// fill
+				TFT_WHITE,                    	// text
+				entryBuf,						// text
+				FoundGriBol20,					// font
+				TFT_BLACK						// button outer BG color for antialiasing
+			);
+			btn.setTextYOffset(3);
+			btn.drawButton();
+		}
     }
 
     // Slider track (50 % width)
@@ -159,33 +186,58 @@ void drawSettingsPage() {
 
     tft.loadFont(FoundGriBol20);
     tft.setTextDatum(TL_DATUM);
-    tft.setTextColor(tft.color565(130, 130, 130), TFT_BLACK, true);
-    tft.drawString("SSID:", 5, INFO_Y);
+	// LABELS
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
+    tft.drawString("SSID", 5, INFO_Y);
+    tft.drawString("IP", 5, INFO_Y + 22);
+	// VALUES
     tft.setTextColor(TFT_WHITE, TFT_BLACK, true);
-    tft.drawString(ssid, 5 + tft.textWidth("SSID:") + 8, INFO_Y);
-    tft.setTextColor(tft.color565(130, 130, 130), TFT_BLACK, true);
-    tft.drawString("IP:", 5, INFO_Y + 22);
-    tft.setTextColor(TFT_WHITE, TFT_BLACK, true);
-    tft.drawString(ip, 5 + tft.textWidth("SSID:") + 8, INFO_Y + 22);
+    tft.drawString(ssid, 5 + tft.textWidth("SSID:") + 10, INFO_Y);
+    tft.drawString(ip, 5 + tft.textWidth("SSID:") + 10, INFO_Y + 22);
     tft.unloadFont();
 
     // "Boot AP" button (left half)
-    uint16_t btnBg = tft.color565(40, 60, 150);
-    uint16_t btnBdr = tft.color565(80, 120, 220);
-    tft.fillRoundRect(APMODE_BTN_X, APMODE_BTN_Y, APMODE_BTN_W, APMODE_BTN_H, 8, btnBg);
-    tft.drawRoundRect(APMODE_BTN_X, APMODE_BTN_Y, APMODE_BTN_W, APMODE_BTN_H, 8, btnBdr);
-    tft.loadFont(FoundGriBol20);
-    tft.setTextDatum(MC_DATUM);
-    tft.setTextColor(TFT_WHITE, btnBg, true);
-    tft.drawString("Boot AP", APMODE_BTN_X + APMODE_BTN_W / 2,
-                   APMODE_BTN_Y + APMODE_BTN_H / 2 + 3);
-    tft.unloadFont();
+    {
+        SmoothButton btn;
+        btn.initButton(&tft,
+                       APMODE_BTN_X, APMODE_BTN_Y,
+                       APMODE_BTN_W, APMODE_BTN_H,
+                       8,
+                       tft.color565(80, 120, 220),   // outline
+                       tft.color565(40, 60, 150),    // fill
+                       TFT_WHITE,                    // text
+                       "Boot AP",
+                       FoundGriBol20);
+        btn.setTextYOffset(3);
+        btn.drawButton();
+    }
+
+    
 
     // "PID on/off" button (right half)
-    drawPidModeBtn(pidFanIsEnabled());
+    // drawPidModeBtn(pidFanIsEnabled());
+    uint16_t bg = pidFanIsEnabled() ? tft.color565(0, 140, 0) : tft.color565(140, 0, 0);
+    uint16_t bdr = pidFanIsEnabled() ? tft.color565(0, 220, 60) : tft.color565(220, 60, 60);
+    {
+        SmoothButton btn;
+        btn.initButton(&tft,
+                       PIDMODE_BTN_X, PIDMODE_BTN_Y,	// position
+                       PIDMODE_BTN_W, PIDMODE_BTN_H,	// size
+                       8,  								// radius
+                       bdr,   							// outline
+                       bg,    							// fill
+                       TFT_WHITE,                    	// text
+                       (pidFanIsEnabled()) ? "PID ON" : "PID OFF",// text
+                       FoundGriBol20,					// font
+					   TFT_BLACK						// button outer BG color for antialiasing
+					);
+        btn.setTextYOffset(3);
+        btn.drawButton();
+    }
 
     uint8_t curPct = fanGetPercent();
     drawFanSection(curPct, curPct);
+
     drawSettingsMoreLink();
 }
 
@@ -204,15 +256,22 @@ void drawSettingsMoreLink() {
 void drawDebugLogBtn(bool enabled) {
     uint16_t bg  = enabled ? tft.color565(0, 140, 0)   : tft.color565(40, 60, 150);
     uint16_t bdr = enabled ? tft.color565(0, 220, 60)  : tft.color565(80, 120, 220);
-    tft.fillRoundRect(DBGLOG_BTN_X, DBGLOG_BTN_Y, DBGLOG_BTN_W, DBGLOG_BTN_H, 8, bg);
-    tft.drawRoundRect(DBGLOG_BTN_X, DBGLOG_BTN_Y, DBGLOG_BTN_W, DBGLOG_BTN_H, 8, bdr);
-    tft.loadFont(FoundGriBol20);
-    tft.setTextDatum(MC_DATUM);
-    tft.setTextColor(TFT_WHITE, bg, true);
-    tft.drawString(enabled ? "UART Logging: ON" : "UART Logging: OFF",
-                   DBGLOG_BTN_X + DBGLOG_BTN_W / 2,
-                   DBGLOG_BTN_Y + DBGLOG_BTN_H / 2 + 3);
-    tft.unloadFont();
+	{
+        SmoothButton btn;
+        btn.initButton(&tft,
+			DBGLOG_BTN_X, DBGLOG_BTN_Y,	// position
+			DBGLOG_BTN_W, DBGLOG_BTN_H,	// size
+			8,  								// radius
+			bdr,   							// outline
+			bg,    							// fill
+			TFT_WHITE,                    	// text
+			(enabled) ? "UART Logging: ON" : "UART Logging: OFF",// text
+			FoundGriBol20,					// font
+			TFT_BLACK						// button outer BG color for antialiasing
+		);
+        btn.setTextYOffset(3);
+        btn.drawButton();
+    }
 }
 
 // Draws (or redraws) the telemetry "Send on change" toggle button.
@@ -220,15 +279,22 @@ void drawDebugLogBtn(bool enabled) {
 void drawTelOnChangeBtn(bool on_change) {
     uint16_t bg  = on_change ? tft.color565(0, 140, 0)  : tft.color565(40, 60, 150);
     uint16_t bdr = on_change ? tft.color565(0, 220, 60) : tft.color565(80, 120, 220);
-    tft.fillRoundRect(TEL_ONCHG_BTN_X, TEL_ONCHG_BTN_Y, TEL_ONCHG_BTN_W, TEL_ONCHG_BTN_H, 8, bg);
-    tft.drawRoundRect(TEL_ONCHG_BTN_X, TEL_ONCHG_BTN_Y, TEL_ONCHG_BTN_W, TEL_ONCHG_BTN_H, 8, bdr);
-    tft.loadFont(FoundGriBol20);
-    tft.setTextDatum(MC_DATUM);
-    tft.setTextColor(TFT_WHITE, bg, true);
-    tft.drawString(on_change ? "Send on change: ON" : "Send on change: OFF",
-                   TEL_ONCHG_BTN_X + TEL_ONCHG_BTN_W / 2,
-                   TEL_ONCHG_BTN_Y + TEL_ONCHG_BTN_H / 2 + 3);
-    tft.unloadFont();
+	{
+        SmoothButton btn;
+        btn.initButton(&tft,
+			TEL_ONCHG_BTN_X, TEL_ONCHG_BTN_Y,	// position
+			TEL_ONCHG_BTN_W, TEL_ONCHG_BTN_H,	// size
+			8,  								// radius
+			bdr,   							// outline
+			bg,    							// fill
+			TFT_WHITE,                    	// text
+			(on_change) ? "Send on change: ON" : "Send on change: OFF",// text
+			FoundGriBol20,					// font
+			TFT_BLACK						// button outer BG color for antialiasing
+		);
+        btn.setTextYOffset(3);
+        btn.drawButton();
+    }
 }
 
 // Draws the four telemetry interval selector buttons (10 s / 30 s / 1 min / 3 min),
@@ -237,34 +303,58 @@ void drawTelOnChangeBtn(bool on_change) {
 void drawTelIntervalBtns(uint32_t interval_s) {
     static const uint32_t opts[4]   = {10, 30, 60, 180};
     static const char*    labels[4] = {"10s", "30s", "1min", "3min"};
+
     tft.loadFont(FoundGriBol20);
     for (int i = 0; i < 4; i++) {
         int bx  = 5 + i * (TEL_INT_BTN_W + TEL_INT_BTN_GAP);
         bool sel = (interval_s == opts[i]);
         uint16_t bg  = sel ? tft.color565(0, 140, 0)  : tft.color565(40, 60, 150);
         uint16_t bdr = sel ? tft.color565(0, 220, 60) : tft.color565(80, 120, 220);
-        tft.fillRoundRect(bx, TEL_INT_BTN_Y, TEL_INT_BTN_W, TEL_INT_BTN_H, 6, bg);
-        tft.drawRoundRect(bx, TEL_INT_BTN_Y, TEL_INT_BTN_W, TEL_INT_BTN_H, 6, bdr);
-        tft.setTextDatum(MC_DATUM);
-        tft.setTextColor(TFT_WHITE, bg, true);
-        tft.drawString(labels[i], bx + TEL_INT_BTN_W / 2, TEL_INT_BTN_Y + TEL_INT_BTN_H / 2 + 3);
+		{
+			SmoothButton btn;
+			btn.initButton(&tft,
+				bx, TEL_INT_BTN_Y,	// position
+				TEL_INT_BTN_W, TEL_INT_BTN_H,	// size
+				8,  							// radius
+				bdr,   							// outline
+				bg,    							// fill
+				TFT_WHITE,                    	// text
+				labels[i],						// text
+				FoundGriBol20,					// font
+				TFT_BLACK						// button outer BG color for antialiasing
+				);
+			btn.setTextYOffset(3);
+			btn.drawButton();
+		}
+        // tft.fillRoundRect(bx, TEL_INT_BTN_Y, TEL_INT_BTN_W, TEL_INT_BTN_H, 6, bg);
+        // tft.drawRoundRect(bx, TEL_INT_BTN_Y, TEL_INT_BTN_W, TEL_INT_BTN_H, 6, bdr);
+        // tft.setTextDatum(MC_DATUM);
+        // tft.setTextColor(TFT_WHITE, bg, true);
+        // tft.drawString(labels[i], bx + TEL_INT_BTN_W / 2, TEL_INT_BTN_Y + TEL_INT_BTN_H / 2 + 3);
     }
-    tft.unloadFont();
+    // tft.unloadFont();
 }
 
 // Draws the "Touch Calibration" button on settings page 2.
 void drawCalibBtn() {
     uint16_t bg  = tft.color565(40, 60, 150);
     uint16_t bdr = tft.color565(80, 120, 220);
-    tft.fillRoundRect(CALIB_BTN_X, CALIB_BTN_Y, CALIB_BTN_W, CALIB_BTN_H, 8, bg);
-    tft.drawRoundRect(CALIB_BTN_X, CALIB_BTN_Y, CALIB_BTN_W, CALIB_BTN_H, 8, bdr);
-    tft.loadFont(FoundGriBol20);
-    tft.setTextDatum(MC_DATUM);
-    tft.setTextColor(TFT_WHITE, bg, true);
-    tft.drawString("Touch Calibration",
-                   CALIB_BTN_X + CALIB_BTN_W / 2,
-                   CALIB_BTN_Y + CALIB_BTN_H / 2 + 2);
-    tft.unloadFont();
+	{
+        SmoothButton btn;
+        btn.initButton(&tft,
+			CALIB_BTN_X, CALIB_BTN_Y,		// position
+			CALIB_BTN_W, CALIB_BTN_H,		// size
+			8,  								// radius
+			bdr,   							// outline
+			bg,    							// fill
+			TFT_WHITE,                    	// text
+			"Touch Calibration",				// text
+			FoundGriBol20,					// font
+			TFT_BLACK						// button outer BG color for antialiasing
+		);
+        btn.setTextYOffset(3);
+        btn.drawButton();
+    }
 }
 
 // Draws the full settings page 2: header with back button, UART debug-log
@@ -291,7 +381,7 @@ void drawSettingsPage2() {
     // Section label
     tft.loadFont(FoundGriBol15);
     tft.setTextDatum(ML_DATUM);
-    tft.setTextColor(tft.color565(130, 130, 130), TFT_BLACK, true);
+    tft.setTextColor(TFT_YELLOW, TFT_BLACK, true);
     tft.drawString("TELEMETRY POST", 5, TEL_SECT_Y + 8);
     tft.unloadFont();
 
@@ -321,7 +411,7 @@ void drawSettingsPage3() {
     tft.drawString("< Back", 8, 4);
     tft.setTextDatum(TC_DATUM);
     tft.setTextColor(TFT_YELLOW, hbg, true);
-    tft.drawString("System Info", SCREEN_W / 2, 4);
+    tft.drawString("Sys Info", SCREEN_W / 2, 4);
     tft.unloadFont();
     drawSettingsRssi();
 
@@ -330,7 +420,7 @@ void drawSettingsPage3() {
     constexpr int VAL_X = SCREEN_W - 5;
     constexpr int ROW_H = 20;
     int r = 0;
-    uint16_t lblCol = tft.color565(130, 130, 130);
+    uint16_t lblCol = TFT_YELLOW;
 
     auto drawRow = [&](const char* lbl, const char* val) {
         int y = HDR_H + 8 + r * ROW_H;

@@ -34,7 +34,8 @@ static void sDrawAlarmSection(int probeNum, int labelY, int sliderTY,
     tft.unloadFont();
 
     // Slider track
-    int hx   = ALM_SLIDER_X + val * ALM_SLIDER_W / 200;
+    int almMax = (probeNum == 7) ? 600 : 200;
+    int hx   = ALM_SLIDER_X + val * ALM_SLIDER_W / almMax;
     int trCY = sliderTY + ALM_SLIDER_TH / 2;
     if (hx > ALM_SLIDER_X)
         tft.fillRoundRect(ALM_SLIDER_X, sliderTY,
