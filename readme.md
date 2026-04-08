@@ -171,7 +171,7 @@ _Well technically only the **local_key**, but the process is still required…_
 
 ---
 
-### 1. Preparing your Server and ESP32 settings
+### 2. Preparing your Server and ESP32 settings
 
 #### Server Settings
 
