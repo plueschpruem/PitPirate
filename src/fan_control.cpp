@@ -4,6 +4,7 @@
 // Speed (%) is persisted in NVS under key "fan_pct" and restored on boot.
 
 #include "fan_control.h"
+#include "servo_control.h"  // valve follows fan in auto mode
 #include "shared_data.h"   // for preferences (NVS)
 #include <Arduino.h>
 #include "debug_log.h"
@@ -89,6 +90,8 @@ void fanSetPercent(uint8_t pct) {
         s_kickUntil = 0;
         ledcWrite(FAN_CHANNEL, (uint8_t)(pct * 255 / 100));
     }
+
+    servoUpdateFromFan(pct);  // valve follows fan when auto mode is enabled
 }
 
 // Returns the current fan speed setpoint in percent (0 = off, 1–100 = running).

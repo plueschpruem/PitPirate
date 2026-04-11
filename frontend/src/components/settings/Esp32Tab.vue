@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import type { TuyaSettings, RemoteSettings, WifiConfig, WifiNetwork, PidConfig } from '@/api/pitpirate'
-import { getWifiConfig, scanWifi, saveWifi, getPidConfig, savePidConfig, getTelemetryConfig, saveTelemetryConfig } from '@/api/pitpirate'
+import type { TuyaSettings, RemoteSettings, WifiConfig, WifiNetwork, PidConfig, ServoConfig } from '@/api/pitpirate'
+import { getWifiConfig, scanWifi, saveWifi, getPidConfig, savePidConfig, getTelemetryConfig, saveTelemetryConfig, getServoConfig, setServoAngle, saveServoLimits, saveServoAuto } from '@/api/pitpirate'
 
 const props = defineProps<{
 	tuya: TuyaSettings
@@ -147,6 +147,60 @@ async function doSaveTelemetryConfig() {
 }
 
 onMounted(loadTelemetryConfig)
+
+// ── Servo ────────────────────────────────────────────────────────────────────
+
+const servoCfg    = ref<ServoConfig>({ angle: 90, min: 0, max: 180, auto: false })
+const servoAngle  = ref(90)
+const servoAuto   = ref(false)
+const servoSaving = ref(false)
+const servoError  = ref('')
+let   servoDebounceTimer: ReturnType<typeof setTimeout> | null = null
+
+async function loadServoConfig() {
+	if (isHttps) return
+	try {
+		servoCfg.value   = await getServoConfig()
+		servoAngle.value = servoCfg.value.angle
+		servoAuto.value  = servoCfg.value.auto
+	} catch { /* keep defaults */ }
+}
+
+function onServoSlider(val: number | undefined) {
+	if (val === undefined) return
+	if (servoDebounceTimer) clearTimeout(servoDebounceTimer)
+	servoDebounceTimer = setTimeout(async () => {
+		try { await setServoAngle(val) }
+		catch (e: unknown) { servoError.value = (e as Error).message }
+	}, 80)
+}
+
+async function doSaveServoLimits() {
+	servoSaving.value = true
+	servoError.value  = ''
+	try {
+		await saveServoLimits(servoCfg.value.min, servoCfg.value.max)
+		// clamp current angle into new limits
+		servoAngle.value = Math.min(Math.max(servoAngle.value, servoCfg.value.min), servoCfg.value.max)
+	} catch (e: unknown) {
+		servoError.value = (e as Error).message
+	} finally {
+		servoSaving.value = false
+	}
+}
+
+async function toggleServoAuto() {
+	const next = !servoAuto.value
+	try {
+		await saveServoAuto(next)
+		servoAuto.value = next
+		servoCfg.value.auto = next
+	} catch (e: unknown) {
+		servoError.value = (e as Error).message
+	}
+}
+
+onMounted(loadServoConfig)
 </script>
 
 <template>
@@ -380,6 +434,75 @@ onMounted(loadTelemetryConfig)
 				<v-btn variant="tonal" prepend-icon="refresh" @click="loadPidConfig">Refresh</v-btn>
 				<v-spacer />
 				<v-btn color="primary" variant="tonal" prepend-icon="content-save" :loading="pidSaving" @click="doSavePid">Save</v-btn>
+			</v-card-actions>
+		</v-card>
+
+		<!-- Servo -->
+		<v-card v-if="!isHttps" class="mb-3" rounded="lg">
+			<v-card-title class="text-body-1 font-weight-bold pt-4 px-4">
+				<v-icon icon="valve" size="18" class="mr-2 mb-1" />
+				Servo (GPIO 27)
+			</v-card-title>
+			<v-card-text>
+
+				<v-btn-toggle
+					:model-value="servoAuto ? 'auto' : 'manual'"
+					mandatory
+					color="primary"
+					variant="tonal"
+					density="compact"
+					class="mb-4"
+					@update:model-value="toggleServoAuto"
+				>
+					<v-btn value="manual">Manual</v-btn>
+					<v-btn value="auto">Auto (follows fan)</v-btn>
+				</v-btn-toggle>
+
+				<div class="text-caption text-medium-emphasis mb-1">
+					Position: <strong>{{ servoAngle }}°</strong>
+					<span v-if="servoAuto" class="ml-2 text-primary">({{ servoCfg.auto ? 'controlled by fan' : '' }})</span>
+				</div>
+				<v-slider
+					v-model="servoAngle"
+					:min="servoCfg.min"
+					:max="servoCfg.max"
+					step="1"
+					thumb-label
+					color="primary"
+					hide-details
+					:disabled="servoAuto"
+					@update:model-value="onServoSlider"
+				/>
+
+				<div class="text-caption text-medium-emphasis mt-4 mb-2">Travel limits</div>
+				<v-row dense>
+					<v-col cols="6">
+						<v-text-field
+							v-model.number="servoCfg.min"
+							label="Min angle (°)"
+							type="number" min="0" max="180" step="1"
+							density="compact"
+							hide-details="auto"
+						/>
+					</v-col>
+					<v-col cols="6">
+						<v-text-field
+							v-model.number="servoCfg.max"
+							label="Max angle (°)"
+							type="number" min="0" max="180" step="1"
+							density="compact"
+							hide-details="auto"
+						/>
+					</v-col>
+				</v-row>
+
+				<v-alert v-if="servoError" color="error" variant="tonal" density="compact" class="mt-3">{{ servoError }}</v-alert>
+
+			</v-card-text>
+			<v-card-actions class="px-4 pb-4">
+				<v-btn variant="tonal" prepend-icon="refresh" @click="loadServoConfig">Refresh</v-btn>
+				<v-spacer />
+				<v-btn color="primary" variant="tonal" prepend-icon="content-save" :loading="servoSaving" @click="doSaveServoLimits">Save limits</v-btn>
 			</v-card-actions>
 		</v-card>
 

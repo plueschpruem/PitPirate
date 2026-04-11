@@ -179,7 +179,7 @@ _Well technically only the **local_key**, but the process is still required…_
    - Use [server/php/generate-keys.php](server/php/generate-keys.php) to generate **VAPID_PUBLIC_KEY** and **VAPID_PRIVATE_KEY**
    - **ALARM_SECRET** and **SECRET_TOKEN** need to be the same as in the ESP32's [include/config.h](include/config.h) (see next section)
    - **VAPID_SUBJECT** is your eMail address and **SUBSCRIPTIONS_FILE** can stay as is.
-2. Save the file as [server/php/config.php](server/php/config.php) to become functional
+2. Save the file as [server/php/config.php](server/php/config.php) to become functional.
 
 #### ESP32 Settings
 
@@ -189,7 +189,7 @@ _Well technically only the **local_key**, but the process is still required…_
    - Same for **TUYA_DEVICE_IP**, **TUYA_DEVICE_ID** and **TUYA_LOCAL_KEY** – all of these can be set on the ESP32's **Setting page** later.
    - Add **REMOTE_POST_URL** and **REMOTE_POST_TOKEN** for remote logging to the server (recommended, _not_ setable via the Settings later!).
    - Adjust **NTP_SERVER** and **NTP_TZ** as needed.
-2. Save the file as [include/config.h](include/config.h) to become functional
+2. Save the file as [include/config.h](include/config.h) to become functional.
 
 ---
 
@@ -197,12 +197,12 @@ _Well technically only the **local_key**, but the process is still required…_
 
 All required actions are in [frontend/package.json](frontend/package.json)
 
-- **dev** runs the local vite development HMR build. Open the IP in the terminal output to see the frontend app.  
+- `dev` runs the local vite development HMR build. Open the IP in the terminal output to see the frontend app.  
   This behaves pretty much like the ESP32-hosted version of the app. It has direct "hardware access" by the magic of PIO's ecosystem. And also live-compiles and updates whenever your change the frontend's code.
-- **build** runs the build script. Including [text](scripts/build_frontend.py)  
+- `build` runs the build script. Including [text](scripts/build_frontend.py)  
   It will build the release version of the app into [server](server) and also bundle it for the ESP32's hosting.  
   That means it grabs the build output and gzips compressable files into [data](data). You won't be able to edit / list those files after that, but they will serve just fine from the ESP32 since it has gzip headers enabled.
-- **install** installs the npm dependencies for the project
+- `install` installs the npm dependencies for the project
 
 ---
 
@@ -216,13 +216,13 @@ All required actions are in [frontend/package.json](frontend/package.json)
 
 ---
 
-## 5. AP Mode
+### 5. AP Mode
 
 _AP mode activates when…_
 
 - connecting to the last known Wifi network fails on ESP32 reboot
 - when you go to the settings via the TFT and press the **Boot AP** button. The ESP32 then opens up an accesspoint (AP) and the TFT displays the credentials plus a matching QR-Code.  
-  The AP has a captive portal <a href="192.168.1.4">192.168.1.4</a>, so after joining it will send you to the frontend app hosted on the ESP32.  
+  The AP has a captive portal <a href="http://192.168.1.4">192.168.1.4</a>, so after joining it will send you to the frontend app hosted on the ESP32.  
   Go to the settings page first and scan for Wifi networks or enter one manually.  
   **Obviously this needs to be the same network as the NC01 is on!**  
   While here, set all other parameters that require adjustment.
@@ -239,7 +239,7 @@ _AP mode activates when…_
   But with a USB-C <—> USB-C cable it doesn't work at all!  
   It fails to trigger the 5V power supply, preventing the board from turning on or being recognized.  
   If you are confident in soldering, you can add two 5.1kΩ resistors between the CC1 pin and GND, and CC2 pin and GND on the USB-C connector. This fixes the fundamental design flaw and allows USB-C to C communication.  
-  Or use some sort of hub/adapter.
+  Or use some sort of hub / adapter.
 - littleFS on the ESP32 only supports 31 characters for filenames.  
   Mind that when adding new icons or other assets. There will be an error in the FS build but the build finishes – so ultimately that file will be missing.
 - When switching probes on the NC01, the device will from there on out return the last know value for the empty probe slot/s.  

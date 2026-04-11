@@ -230,6 +230,33 @@ export async function savePidConfig(cfg: Omit<PidConfig, 'output' | 'error' | 'i
   if (!res.ok) throw new Error(await res.text())
 }
 
+// ── /servo-config & /save-servo ───────────────────────────────────────────────
+export interface ServoConfig { angle: number; min: number; max: number; auto: boolean }
+
+export async function getServoConfig(): Promise<ServoConfig> {
+  const res = await fetch('/servo-config', { headers: NO_CACHE })
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  return res.json()
+}
+
+// Immediately moves the servo to the given angle (called while dragging the slider).
+export async function setServoAngle(angle: number): Promise<void> {
+  const res = await fetch(`/save-servo?angle=${angle}`, { headers: NO_CACHE })
+  if (!res.ok) throw new Error(await res.text())
+}
+
+// Persists the min/max limits (and optionally a new angle) to NVS.
+export async function saveServoLimits(min: number, max: number): Promise<void> {
+  const res = await fetch(`/save-servo?min=${min}&max=${max}`, { headers: NO_CACHE })
+  if (!res.ok) throw new Error(await res.text())
+}
+
+// Enables or disables automatic (fan-coupled) mode.
+export async function saveServoAuto(enabled: boolean): Promise<void> {
+  const res = await fetch(`/save-servo?auto=${enabled ? '1' : '0'}`, { headers: NO_CACHE })
+  if (!res.ok) throw new Error(await res.text())
+}
+
 // ── Sessions ──────────────────────────────────────────────────────────────────
 
 export async function listSessions(base = ''): Promise<string[]> {

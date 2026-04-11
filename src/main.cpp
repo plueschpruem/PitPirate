@@ -4,20 +4,21 @@
 
 #include "alarm_notify.h"
 #include "config.h"
+#include "debug_log.h"
 #include "display/display.h"
-#include "display/touch_calibration.h"
 #include "display/gif_anim.h"
 #include "display/png_image.h"
+#include "display/touch_calibration.h"
 #include "fan_control.h"
 #include "http_task.h"
-#include "pid_fan.h"
 #include "network/tuya_lan.h"
 #include "network/web_server.h"
 #include "network/wifi_manager.h"
+#include "pid_fan.h"
 #include "remote_post.h"
 #include "screenshot.h"
+#include "servo_control.h"
 #include "shared_data.h"
-#include "debug_log.h"
 
 // ── Hardware objects ──────────────────────────────────────────────────────────
 SPIClass touchscreenSpi(VSPI);
@@ -34,9 +35,12 @@ void setup() {
 
     // RGB LED (active-low common-anode) — drive HIGH to keep all channels off
 #if defined(BOARD_HAS_RGB_LED) && BOARD_HAS_RGB_LED != 0
-    pinMode(RGB_LED_R, OUTPUT); digitalWrite(RGB_LED_R, HIGH);
-    pinMode(RGB_LED_G, OUTPUT); digitalWrite(RGB_LED_G, HIGH);
-    pinMode(RGB_LED_B, OUTPUT); digitalWrite(RGB_LED_B, HIGH);
+    pinMode(RGB_LED_R, OUTPUT);
+    digitalWrite(RGB_LED_R, HIGH);
+    pinMode(RGB_LED_G, OUTPUT);
+    digitalWrite(RGB_LED_G, HIGH);
+    pinMode(RGB_LED_B, OUTPUT);
+    digitalWrite(RGB_LED_B, HIGH);
 #endif
 
     // Display
@@ -104,9 +108,10 @@ void setup() {
     // Alarm checker
     alarmNotifyInit();
 
-    // Fan control (GPIO 22, PWM)
+    // Fan control (GPIO 22, PWM) + servo (GPIO 27, SG-90)
     fanInit();
     pidFanInit();
+    servoInit();
 
     // OTA firmware updates
     ArduinoOTA.setHostname("pitpirate");
@@ -122,26 +127,26 @@ void setup() {
 static String lastJsonData;
 static int lastMinute = -1;
 // GPIO_0 (BOOT button) screenshot trigger state
-static bool          s_gpio0Prev       = HIGH;
+static bool s_gpio0Prev = HIGH;
 static unsigned long s_gpio0DebounceMs = 0;
 static bool lastTouched = false;
-static bool    s_showSettings     = false;  // true while the settings page is visible
-static uint8_t s_settingsEntryPct = 0;      // fan % captured when settings was opened
-static unsigned long lastDisplayMs = 0;     // non-blocking display-refresh gate
-static unsigned long lastRssiMs   = 0;      // non-blocking RSSI refresh gate (settings page)
-static bool s_showSettings2     = false;    // true while settings page 2 is visible
-static bool s_showSettings3     = false;    // true while settings page 3 (system info) is visible
-static bool s_showProbeLimits   = false;    // true while probe limits page is shown
-static bool s_showCalibration   = false;    // true while touch calibration is active
-static int  s_limitsProbeNum    = 0;        // 1-based probe number being edited
-static int  s_limitsLo          = 0;        // working LO limit (°C, 0 = off)
-static int  s_limitsHi          = 0;        // working HI limit (°C, 0 = off)
+static bool s_showSettings = false;      // true while the settings page is visible
+static uint8_t s_settingsEntryPct = 0;   // fan % captured when settings was opened
+static unsigned long lastDisplayMs = 0;  // non-blocking display-refresh gate
+static unsigned long lastRssiMs = 0;     // non-blocking RSSI refresh gate (settings page)
+static bool s_showSettings2 = false;     // true while settings page 2 is visible
+static bool s_showSettings3 = false;     // true while settings page 3 (system info) is visible
+static bool s_showProbeLimits = false;   // true while probe limits page is shown
+static bool s_showCalibration = false;   // true while touch calibration is active
+static int s_limitsProbeNum = 0;         // 1-based probe number being edited
+static int s_limitsLo = 0;               // working LO limit (°C, 0 = off)
+static int s_limitsHi = 0;               // working HI limit (°C, 0 = off)
 // Backlight auto-dim state
-#define BACKLIGHT_MIN 5						 // minimum backlinght brightness
-#define BACKLIGHT_MAX 100					 // maximum backlinght brightness
-static int  		 s_blPct          = BACKLIGHT_MAX; // current brightness (10–100%)
-static unsigned long s_lastActivityMs = 0;   // millis() of last touch
-static unsigned long s_lastDimMs      = 0;   // millis() of last 1%-step dim
+#define BACKLIGHT_MIN 5                     // minimum backlinght brightness
+#define BACKLIGHT_MAX 100                   // maximum backlinght brightness
+static int s_blPct = BACKLIGHT_MAX;         // current brightness (10–100%)
+static unsigned long s_lastActivityMs = 0;  // millis() of last touch
+static unsigned long s_lastDimMs = 0;       // millis() of last 1%-step dim
 
 // Maps screen-space touch coordinates to a probe number by identifying which
 // probe cell the tap landed in.
@@ -156,11 +161,22 @@ static int probeAtTouch(int tx, int ty) {
         if (!isnan(dcache.probeVal[i])) active[n++] = i;
     if (n == 0) return 0;
     int cols, rows;
-    if      (n <= 1) { cols = 1; rows = 1; }
-    else if (n <= 2) { cols = 2; rows = 1; }
-    else if (n <= 3) { cols = 3; rows = 1; }
-    else if (n <= 4) { cols = 2; rows = 2; }
-    else             { cols = 3; rows = 2; }
+    if (n <= 1) {
+        cols = 1;
+        rows = 1;
+    } else if (n <= 2) {
+        cols = 2;
+        rows = 1;
+    } else if (n <= 3) {
+        cols = 3;
+        rows = 1;
+    } else if (n <= 4) {
+        cols = 2;
+        rows = 2;
+    } else {
+        cols = 3;
+        rows = 2;
+    }
     int col = tx / (SCREEN_W / cols);
     int row = (ty - HDR_H) / (PROBE_AREA_H / rows);
     int idx = row * cols + col;
@@ -177,8 +193,7 @@ void loop() {
     // ── Screenshot: BOOT button (GPIO_0) + debug log enabled ─────────────────
     {
         bool gpio0 = digitalRead(0);
-        if (gpio0 == LOW && s_gpio0Prev == HIGH
-                && millis() - s_gpio0DebounceMs > 50UL) {
+        if (gpio0 == LOW && s_gpio0Prev == HIGH && millis() - s_gpio0DebounceMs > 50UL) {
             s_gpio0DebounceMs = millis();
             if (debugLogEnabled()) {
                 DLOGLN("[SHOT] GPIO_0 pressed – capturing screenshot");
@@ -229,7 +244,7 @@ void loop() {
                 // ── Touch calibration flow ───────────────────────────────────
                 if (touchCalibHandleTouch(tx, ty, p.x, p.y)) {
                     s_showCalibration = false;
-                    s_showSettings2   = true;
+                    s_showSettings2 = true;
                     drawSettingsPage2();
                 }
             } else if (s_showSettings3) {
@@ -251,20 +266,22 @@ void loop() {
                     drawDebugLogBtn(debugLogEnabled());
                 } else if (tx >= TEL_ONCHG_BTN_X && tx <= TEL_ONCHG_BTN_X + TEL_ONCHG_BTN_W &&
                            ty >= TEL_ONCHG_BTN_Y && ty <= TEL_ONCHG_BTN_Y + TEL_ONCHG_BTN_H) {
-                    uint32_t iv; bool oc;
+                    uint32_t iv;
+                    bool oc;
                     remotePostGetTelemetryConfig(iv, oc);
                     remotePostApplyTelemetryConfig(iv, !oc);
                     drawTelOnChangeBtn(!oc);
                 } else if (ty >= TEL_INT_BTN_Y && ty <= TEL_INT_BTN_Y + TEL_INT_BTN_H) {
                     static const uint32_t telOpts[4] = {10, 30, 60, 180};
                     int idx = constrain((tx - 5) / (TEL_INT_BTN_W + TEL_INT_BTN_GAP), 0, 3);
-                    uint32_t iv; bool oc;
+                    uint32_t iv;
+                    bool oc;
                     remotePostGetTelemetryConfig(iv, oc);
                     remotePostApplyTelemetryConfig(telOpts[idx], oc);
                     drawTelIntervalBtns(telOpts[idx]);
                 } else if (tx >= CALIB_BTN_X && tx <= CALIB_BTN_X + CALIB_BTN_W &&
                            ty >= CALIB_BTN_Y && ty <= CALIB_BTN_Y + CALIB_BTN_H) {
-                    s_showSettings2   = false;
+                    s_showSettings2 = false;
                     s_showCalibration = true;
                     touchCalibBegin();
                 } else if (tx >= SCREEN_W - 80 && ty > CALIB_BTN_Y + CALIB_BTN_H) {
@@ -348,7 +365,7 @@ void loop() {
                                  ty <= ALM_LO_SLIDER_TY + ALM_SLIDER_TH / 2 + ALM_BTN_H / 2);
                     bool isHi = (ty >= ALM_HI_LABEL_Y &&
                                  ty <= ALM_HI_SLIDER_TY + ALM_SLIDER_TH / 2 + ALM_BTN_H / 2);
-                    int  delta = (tx < ALM_SLIDER_X) ? -1 : 1;
+                    int delta = (tx < ALM_SLIDER_X) ? -1 : 1;
                     if (isLo) {
                         s_limitsLo = constrain(s_limitsLo + delta, 0, aMax);
                         drawAlarmLoSlider(s_limitsProbeNum, s_limitsLo);
@@ -367,7 +384,7 @@ void loop() {
                     s_limitsHi = constrain((tx - ALM_SLIDER_X) * aMax / ALM_SLIDER_W, 0, aMax);
                     drawAlarmHiSlider(s_limitsProbeNum, s_limitsHi);
                 } else if (tx >= ALM_SET_BTN_X && tx <= ALM_SET_BTN_X + ALM_SET_BTN_W &&
-                           ty >= ALM_SET_BTN_Y  && ty <= ALM_SET_BTN_Y  + ALM_SET_BTN_H) {
+                           ty >= ALM_SET_BTN_Y && ty <= ALM_SET_BTN_Y + ALM_SET_BTN_H) {
                     // Persist to NVS and push to remote server
                     preferences.putInt(("alm_" + String(s_limitsProbeNum) + "_lo").c_str(), s_limitsLo);
                     preferences.putInt(("alm_" + String(s_limitsProbeNum) + "_hi").c_str(), s_limitsHi);

@@ -5,6 +5,7 @@
 #include "wifi_manager.h"
 #include "../fan_control.h"
 #include "../pid_fan.h"
+#include "../servo_control.h"
 
 #include <WebServer.h>
 #include <WiFi.h>
@@ -416,6 +417,51 @@ static void handleSavePid() {
 }
 
 // ---------------------------------------------------------------------------
+// Servo: /servo-config (GET) and /save-servo (GET with query params)
+// NVS keys: srv_ang (current angle), srv_min (min limit), srv_max (max limit)
+// ---------------------------------------------------------------------------
+// GET /servo-config — Returns current servo angle and limits as JSON.
+// Response: {"angle":N,"min":N,"max":N,"auto":true|false}
+static void handleServoConfig() {
+    String json = "{\"angle\":" + String(servoGetAngle())
+                + ",\"min\":"   + String(servoGetMinAngle())
+                + ",\"max\":"   + String(servoGetMaxAngle())
+                + ",\"auto\":"  + (servoIsAuto() ? "true" : "false") + "}";
+    server.send(200, "application/json", json);
+}
+
+// GET /save-servo — Moves and/or re-limits the servo.
+// Query params (all optional):
+//   @param angle  Target angle in degrees (0–180); clamped to [min,max] and persisted.
+//   @param min    New minimum angle limit (0–180); must be <= max if both provided.
+//   @param max    New maximum angle limit (0–180); must be >= min if both provided.
+//   @param auto   "1"/"true" to enable auto (fan-coupled) mode, "0"/"false" to disable.
+static void handleSaveServo() {
+    if (server.hasArg("min") || server.hasArg("max")) {
+        int mn = server.hasArg("min") ? server.arg("min").toInt() : (int)servoGetMinAngle();
+        int mx = server.hasArg("max") ? server.arg("max").toInt() : (int)servoGetMaxAngle();
+        if (mn < 0 || mn > 180 || mx < 0 || mx > 180) {
+            server.send(400, "text/plain", "min/max must be 0-180"); return;
+        }
+        if (mn > mx) {
+            server.send(400, "text/plain", "min must be <= max"); return;
+        }
+        servoSetMinAngle((uint8_t)mn);
+        servoSetMaxAngle((uint8_t)mx);
+    }
+    if (server.hasArg("angle")) {
+        int a = server.arg("angle").toInt();
+        if (a < 0 || a > 180) { server.send(400, "text/plain", "angle must be 0-180"); return; }
+        servoSetAngle((uint8_t)a);  // clamps to [min,max] and persists
+    }
+    if (server.hasArg("auto")) {
+        String v = server.arg("auto");
+        servoSetAuto(v == "1" || v == "true");
+    }
+    server.send(200, "text/plain", "OK");
+}
+
+// ---------------------------------------------------------------------------
 // WiFi provisioning: /wifi-config (GET), /wifi-scan (GET), /save-wifi (GET)
 // ---------------------------------------------------------------------------
 
@@ -507,6 +553,8 @@ void webServerInit() {
     server.on("/save-wifi",     handleSaveWifi);
     server.on("/pid-config",    handlePidConfig);
     server.on("/save-pid",      handleSavePid);
+    server.on("/servo-config",  handleServoConfig);
+    server.on("/save-servo",    handleSaveServo);
     server.onNotFound(handleNotFoundFs);
     server.begin();
     Serial.println("HTTP server started");

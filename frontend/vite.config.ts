@@ -8,7 +8,8 @@ import { readFileSync, writeFileSync, existsSync, readdirSync, unlinkSync, cpSyn
 import { resolve, relative, extname } from "path";
 
 // ── Set this to your ESP32's IP for `npm run dev` HMR proxy ──────────────────
-const ESP32_IP = "http://192.168.179.7";
+const ESP32_IP = "http://192.168.60.116";
+// const ESP32_IP = "http://pitpirate.local";
 
 // ── Cache-busting: appends ?v=<content-hash> to every /assets/* URL in ───────
 // index.html after the build so browsers always re-fetch changed assets.
@@ -201,6 +202,8 @@ export default defineConfig({
       "/save-pid": { target: ESP32_IP, changeOrigin: true },
       "/telemetry-config": { target: ESP32_IP, changeOrigin: true },
       "/save-telemetry-config": { target: ESP32_IP, changeOrigin: true },
+      "/servo-config": { target: ESP32_IP, changeOrigin: true },
+      "/save-servo": { target: ESP32_IP, changeOrigin: true },
     },
   },
 });
