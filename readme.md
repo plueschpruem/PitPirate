@@ -53,7 +53,7 @@
 - OTA firmware flashing over WiFi (with PIO for example)
 - Remote telemetry / debug logging to optional PHP server
 - AP mode with captive portal for WiFi provisioning
-- LittleFS-hosted frontend with gzip compression
+- LittleFS-hosted frontend with gzip compression (vite.js handles compression during build)
 
 **Resources:**
 
@@ -104,6 +104,18 @@
 - Double-pressing the ON/OFF button gives a beep and a rising tone – the backlight will remain on.  
   Double-pressing again will give a beep and a long beep – backlight will auto turn off again.
 - I noticed that every day at around 00:00 it loses Wifi connectivity shortly, beeps in anguish and then just reconnects.
+
+![Inside the NC01](documentation/NC01-Inside.jpg "Inside the NC01") _Inside the NC01_
+
+### First glance hardware details
+
+- 6 little screws secure the backplate.
+- Device opens up nicely, everything is well layed out and PCB has plenty of prints.
+- PCB print: BBQ NC1-V2.21 7_7  
+  230722 | 20250324
+- Main µC is be a `HDSC HC32L136`. A Cortex-M0+ Chip made by `Huada Semiconductor Co., Ltd.`
+- A programming header is present on the PCB – in case you want to hack the device and feel like trying out esoteric toolchains 👻
+- Wifi is handled by a `Tuya WBR1 Module`
 
 ## The problem
 
